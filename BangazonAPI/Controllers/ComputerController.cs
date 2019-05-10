@@ -46,17 +46,34 @@ namespace BangazonAPI.Controllers
                     List<Computer> computers = new List<Computer>();
                     while (reader.Read())
                     {
-                        Computer computer = new Computer
+                        if (reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                            DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate")),
-                            Make = reader.GetString(reader.GetOrdinal("LastName")),
-                            Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
-                            // You might have more columns
-                        };
+                            Computer computer = new Computer
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
+                                Make = reader.GetString(reader.GetOrdinal("Make")),
+                                Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                                // You might have more columns
+                            };
 
-                        computers.Add(computer);
+                            computers.Add(computer);
+                        }
+
+                        else
+                        {
+                            Computer computer = new Computer
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
+                                DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate")),
+                                Make = reader.GetString(reader.GetOrdinal("Make")),
+                                Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                                // You might have more columns
+                            };
+
+                            computers.Add(computer);
+                        }
                     }
 
                     reader.Close();
