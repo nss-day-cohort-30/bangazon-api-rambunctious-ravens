@@ -3652,9 +3652,6 @@
       "BangazonAPI/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v2.1",
-        "dependencies": {
-          "Microsoft.NETCore.App": "2.1.0"
-        },
         "compile": {
           "bin/placeholder/BangazonAPI.dll": {}
         },
@@ -10524,23 +10521,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\croni\\.nuget\\packages\\": {},
+    "C:\\Users\\jkehs\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\croni\\Workspace\\csharp\\bangazon-api-rambunctious-ravens\\TestBangazonAPI\\TestBangazonAPI.csproj",
+      "projectUniqueName": "C:\\Users\\jkehs\\workspace\\bangazon-api-rambunctious-ravens\\TestBangazonAPI\\TestBangazonAPI.csproj",
       "projectName": "TestBangazonAPI",
-      "projectPath": "C:\\Users\\croni\\Workspace\\csharp\\bangazon-api-rambunctious-ravens\\TestBangazonAPI\\TestBangazonAPI.csproj",
-      "packagesPath": "C:\\Users\\croni\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\croni\\Workspace\\csharp\\bangazon-api-rambunctious-ravens\\TestBangazonAPI\\obj\\",
+      "projectPath": "C:\\Users\\jkehs\\workspace\\bangazon-api-rambunctious-ravens\\TestBangazonAPI\\TestBangazonAPI.csproj",
+      "packagesPath": "C:\\Users\\jkehs\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\jkehs\\workspace\\bangazon-api-rambunctious-ravens\\TestBangazonAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\croni\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\jkehs\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -10553,8 +10550,8 @@
       "frameworks": {
         "netcoreapp2.1": {
           "projectReferences": {
-            "C:\\Users\\croni\\Workspace\\csharp\\bangazon-api-rambunctious-ravens\\BangazonAPI\\BangazonAPI.csproj": {
-              "projectPath": "C:\\Users\\croni\\Workspace\\csharp\\bangazon-api-rambunctious-ravens\\BangazonAPI\\BangazonAPI.csproj"
+            "C:\\Users\\jkehs\\workspace\\bangazon-api-rambunctious-ravens\\BangazonAPI\\BangazonAPI.csproj": {
+              "projectPath": "C:\\Users\\jkehs\\workspace\\bangazon-api-rambunctious-ravens\\BangazonAPI\\BangazonAPI.csproj"
             }
           }
         }
@@ -10589,6 +10586,7 @@
             "version": "[15.9.0, )"
           },
           "Microsoft.NETCore.App": {
+            "suppressParent": "All",
             "target": "Package",
             "version": "[2.1.0, )",
             "autoReferenced": true
