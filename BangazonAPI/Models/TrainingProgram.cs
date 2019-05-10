@@ -7,5 +7,10 @@ namespace BangazonAPI.Models
 {
     public class TrainingProgram
     {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime endDate { get; set; }
+        public int MaxAttendees { get; set; }
     }
 }
