@@ -39,7 +39,7 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, ProductTypeId, CustomerId, Price, Title, Description, Quantity FROM Product";
+                    cmd.CommandText = "SELECT ProductType.Name, CustomerId, Price, Title, [Description], Quantity FROM Product LEFT JOIN ProductType ON Product.ProductTypeId = ProductType.Id ";
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
                     List<Product> products = new List<Product>();
@@ -75,7 +75,7 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, ProductTypeId, CustomerId, Price, Title, Description, Quantity FROM Product";
+                    cmd.CommandText = "SELECT ProductType.Name, Customer.FirstName , Customer.LastName, Price, Title, [Description], Quantity FROM ProductLEFT JOIN ProductType ON Product.ProductTypeId = ProductType.Id LEFT JOIN Customer ON Product.CustomerId = Customer.Id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
