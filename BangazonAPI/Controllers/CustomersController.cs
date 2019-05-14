@@ -39,7 +39,7 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "Write your SQL statement here to get all customers";
+                    cmd.CommandText = "SELECT * from customer";
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
                     List<Customer> customers = new List<Customer>();
@@ -96,95 +96,95 @@ namespace BangazonAPI.Controllers
         }
 
         // POST api/values
-        [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Customer customer)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    // More string interpolation
-                    cmd.CommandText = @"
-                        INSERT INTO Customer ()
-                        OUTPUT INSERTED.Id
-                        VALUES ()
-                    ";
-                    cmd.Parameters.Add(new SqlParameter("@firstName", customer.FirstName));
+        //[HttpPost]
+        //public async Task<IActionResult> Post([FromBody] Customer customer)
+        //{
+        //    using (SqlConnection conn = Connection)
+        //    {
+        //        conn.Open();
+        //        using (SqlCommand cmd = conn.CreateCommand())
+        //        {
+        //            // More string interpolation
+        //            cmd.CommandText = @"
+        //                INSERT INTO Customer ()
+        //                OUTPUT INSERTED.Id
+        //                VALUES ()
+        //            ";
+        //            cmd.Parameters.Add(new SqlParameter("@firstName", customer.FirstName));
 
-                    customer.Id = (int) await cmd.ExecuteScalarAsync();
+        //            customer.Id = (int) await cmd.ExecuteScalarAsync();
 
-                    return CreatedAtRoute("GetCustomer", new { id = customer.Id }, customer);
-                }
-            }
-        }
+        //            return CreatedAtRoute("GetCustomer", new { id = customer.Id }, customer);
+        //        }
+        //    }
+        //}
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] Customer customer)
-        {
-            try
-            {
-                using (SqlConnection conn = Connection)
-                {
-                    conn.Open();
-                    using (SqlCommand cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = @"
-                            UPDATE Customer
-                            SET FirstName = @firstName
-                            -- Set the remaining columns here
-                            WHERE Id = @id
-                        ";
-                        cmd.Parameters.Add(new SqlParameter("@id", customer.Id));
-                        cmd.Parameters.Add(new SqlParameter("@firstName", customer.FirstName));
+        //// PUT api/values/5
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> Put(int id, [FromBody] Customer customer)
+        //{
+        //    try
+        //    {
+        //        using (SqlConnection conn = Connection)
+        //        {
+        //            conn.Open();
+        //            using (SqlCommand cmd = conn.CreateCommand())
+        //            {
+        //                cmd.CommandText = @"
+        //                    UPDATE Customer
+        //                    SET FirstName = @firstName
+        //                    -- Set the remaining columns here
+        //                    WHERE Id = @id
+        //                ";
+        //                cmd.Parameters.Add(new SqlParameter("@id", customer.Id));
+        //                cmd.Parameters.Add(new SqlParameter("@firstName", customer.FirstName));
 
-                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+        //                int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
-                        if (rowsAffected > 0)
-                        {
-                            return new StatusCodeResult(StatusCodes.Status204NoContent);
-                        }
+        //                if (rowsAffected > 0)
+        //                {
+        //                    return new StatusCodeResult(StatusCodes.Status204NoContent);
+        //                }
 
-                        throw new Exception("No rows affected");
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                if (!CustomerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-        }
+        //                throw new Exception("No rows affected");
+        //            }
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        //if (!CustomerExists(id))
+        //        //{
+        //        //    return NotFound();
+        //        //}
+        //        //else
+        //        //{
+        //        //    throw;
+        //        //}
+        //    }
+        //}
 
         // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-        }
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> Delete(int id)
+        //{
+        //}
 
-        private bool CustomerExists(int id)
-        {
-            using (SqlConnection conn = Connection)
-            {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    // More string interpolation
-                    cmd.CommandText = "SELECT Id FROM Customer WHERE Id = @id";
-                    cmd.Parameters.Add(new SqlParameter("@id", id));
+        //private bool CustomerExists(int id)
+        //{
+        //    using (SqlConnection conn = Connection)
+        //    {
+        //        conn.Open();
+        //        using (SqlCommand cmd = conn.CreateCommand())
+        //        {
+        //            // More string interpolation
+        //            cmd.CommandText = "SELECT Id FROM Customer WHERE Id = @id";
+        //            cmd.Parameters.Add(new SqlParameter("@id", id));
 
-                    SqlDataReader reader = cmd.ExecuteReader();
+        //            SqlDataReader reader = cmd.ExecuteReader();
 
-                    return reader.Read();
-                }
-            }
-        }
+        //            return reader.Read();
+        //        }
+        //    }
+        //}
     }
 }
