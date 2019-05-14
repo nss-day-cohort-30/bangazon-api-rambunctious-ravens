@@ -34,12 +34,17 @@ namespace BangazonAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
+
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT FirstName, LastName, d.Name from Employee e LEFT JOIN Department d ON e.DepartmentId = d.id";
+                    cmd.CommandText = @"SELECT e.Id, FirstName, LastName, IsSuperVisor, d.Name, d.Budget, c.Manufacturer, c.Make, c.PurchaseDate FROM Employee e
+                                            JOIN Department d ON e.DepartmentId = d.Id
+                                            JOIN ComputerEmployee ce ON e.Id = ce.EmployeeId
+                                            JOIN Computer c ON c.Id = ce.ComputerId";
+
 
 
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
@@ -52,8 +57,20 @@ namespace BangazonAPI.Controllers
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                            IsSupervisor = reader.GetBoolean(reader.GetOrdinal("IsSupervisor")),
-                            DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId"))
+                            IsSuperVisor = reader.GetBoolean(reader.GetOrdinal("IsSuperVisor")),
+                            Department = new Department
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                Budget = reader.GetInt32(reader.GetOrdinal("Budget"))
+                            },
+                            Computer = new Computer
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
+                                Make = reader.GetString(reader.GetOrdinal("Make")),
+                                Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                            }
                         };
 
                         employees.Add(employee);
@@ -64,10 +81,13 @@ namespace BangazonAPI.Controllers
                     return Ok(employees);
                 }
             }
+
+
+
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "GetEmployee")]
         public async Task<IActionResult> Get(int id)
         {
             using (SqlConnection conn = Connection)
@@ -75,7 +95,11 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM Employee c WHERE c.Id = @id";
+                    cmd.CommandText = @"SELECT e.Id, FirstName, LastName, IsSuperVisor, d.Name, d.Budget, c.Manufacturer, c.Make, c.PurchaseDate FROM Employee e
+                                        JOIN Department d ON e.DepartmentId = d.Id
+                                        JOIN ComputerEmployee ce ON e.Id = ce.EmployeeId
+                                        JOIN Computer c ON c.Id = ce.ComputerId
+                                        WHERE e.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
@@ -87,8 +111,20 @@ namespace BangazonAPI.Controllers
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                            IsSupervisor = reader.GetBoolean(reader.GetOrdinal("IsSupervisor")),
-                            DepartmentId = reader.GetInt32(reader.GetOrdinal("DepartmentId"))
+                            IsSuperVisor = reader.GetBoolean(reader.GetOrdinal("IsSupervisor")),
+                            Department = new Department
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                Budget = reader.GetInt32(reader.GetOrdinal("Budget"))
+                            },
+                            Computer = new Computer
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
+                                Make = reader.GetString(reader.GetOrdinal("Make")),
+                                Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                            }
                         };
                     }
 
@@ -108,21 +144,22 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    // More string interpolation
+                    
                     cmd.CommandText = @"
-                        INSERT INTO Employee (FirstName, LastName, IsSupervisor, DepartmentId)
+                        INSERT INTO Employee (FirstName, LastName, IsSuperVisor, DepartmentId)
                         OUTPUT INSERTED.Id
-                        VALUES (@FirstName, @LastName, @IsSupervisor, @DepartmentId)
+                        VALUES (@FirstName, @LastName, @IsSuperVisor, @DepartmentId)
                     ";
                     cmd.Parameters.Add(new SqlParameter("@FirstName", employee.FirstName));
                     cmd.Parameters.Add(new SqlParameter("@LastName", employee.LastName));
-                    cmd.Parameters.Add(new SqlParameter("@IsSupervisor", employee.IsSupervisor));
+                    cmd.Parameters.Add(new SqlParameter("@IsSuperVisor", employee.IsSuperVisor));
                     cmd.Parameters.Add(new SqlParameter("@DepartmentId", employee.DepartmentId));
 
 
-                    employee.Id = (int) await cmd.ExecuteScalarAsync();
+                    int newId = (int)await cmd.ExecuteScalarAsync();
+                    employee.Id = newId;
+                    return CreatedAtRoute("GetEmployee", new { id = newId }, employee);
 
-                    return CreatedAtRoute("GetEmployee", new { id = employee.Id }, employee);
                 }
             }
         }
@@ -139,18 +176,19 @@ namespace BangazonAPI.Controllers
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
                         cmd.CommandText = @"
-                            UPDATE Employee
-                            SET FirstName = @FirstName
-                                LastName = @LastName
-                                IsSupervisor = @IsSupervisor
-                                DepartmentId = @DepartmentId
-                            WHERE Id = @id
+                        UPDATE Employee
+                        SET FirstName = @FirstName,
+                            LastName = @LastName,
+                            IsSuperVisor = @IsSuperVisor,
+                            DepartmentId = @DepartmentId
+                        WHERE Id = @id;
                         ";
-                        cmd.Parameters.Add(new SqlParameter("@id", employee.Id));
                         cmd.Parameters.Add(new SqlParameter("@FirstName", employee.FirstName));
                         cmd.Parameters.Add(new SqlParameter("@LastName", employee.LastName));
-                        cmd.Parameters.Add(new SqlParameter("@IsSupervisor", employee.IsSupervisor));
+                        cmd.Parameters.Add(new SqlParameter("@IsSupervisor", employee.IsSuperVisor));
                         cmd.Parameters.Add(new SqlParameter("@DepartmentId", employee.DepartmentId));
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+
 
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 

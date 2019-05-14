@@ -39,7 +39,7 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Name, Budget from Department";
+                    cmd.CommandText = "SELECT Id, Name, Budget from Department";
 
 
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
@@ -65,7 +65,7 @@ namespace BangazonAPI.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name ="GetDepartment")]
         public async Task<IActionResult> Get(int id)
         {
             using (SqlConnection conn = Connection)
@@ -73,7 +73,7 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM Department c WHERE c.Id = @id";
+                    cmd.CommandText = "SELECT Id, Name, Budget FROM Department d WHERE d.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
@@ -114,9 +114,9 @@ namespace BangazonAPI.Controllers
                     cmd.Parameters.Add(new SqlParameter("@Budget", department.Budget));
 
 
-                    department.Id = (int) await cmd.ExecuteScalarAsync();
-
-                    return CreatedAtRoute("GetDepartment", new { id = department.Id }, department);
+                    int newId = (int)await cmd.ExecuteScalarAsync();
+                    department.Id = newId;
+                    return CreatedAtRoute("GetDepartment", new { id = newId }, department);
                 }
             }
         }
@@ -134,13 +134,14 @@ namespace BangazonAPI.Controllers
                     {
                         cmd.CommandText = @"
                             UPDATE Department
-                            SET Name = @Name
+                            SET Name = @Name,
                                 Budget = @Budget
                             WHERE Id = @id
                         ";
-                        cmd.Parameters.Add(new SqlParameter("@id", department.Id));
+                        
                         cmd.Parameters.Add(new SqlParameter("@Name", department.Name));
                         cmd.Parameters.Add(new SqlParameter("@Budget", department.Budget));
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
 
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
