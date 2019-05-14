@@ -45,6 +45,9 @@ namespace BangazonAPI.Controllers
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
                     List<TrainingProgram> trainingPrograms = new List<TrainingProgram>();
+
+                    DateTime? StartDate = null;
+                    DateTime? EndDate = null;
                     while (reader.Read())
                     {
                         TrainingProgram trainingProgram = new TrainingProgram
@@ -57,8 +60,11 @@ namespace BangazonAPI.Controllers
 
                             // You might have more columns
                         };
+                        StartDate = reader.GetDateTime(reader.GetOrdinal("StartDate"));
+                        EndDate = reader.GetDateTime(reader.GetOrdinal("EndDate"));
 
                         trainingPrograms.Add(trainingProgram);
+
                     }
 
                     reader.Close();

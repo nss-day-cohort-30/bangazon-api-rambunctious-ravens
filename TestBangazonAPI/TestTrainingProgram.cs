@@ -7,11 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
+using System;
 
 namespace TestBangazonAPI
 {
 
-    public class TestStudents
+    public class TestTrainingPogram
     {
         [Fact]
         public async Task Test_Get_All_TrainingPrograms()
@@ -63,98 +64,102 @@ namespace TestBangazonAPI
         }
 
 
+        //[Fact]
+        //public async Task Test_Create_And_Delete_TrainingProgram()
+        //{
+        //    DateTime startdate = DateTime.Now;
+        //    DateTime enddate = DateTime.Now;
+
+        //    using (var client = new APIClientProvider().Client)
+        //    {
+        //        TrainingProgram safety = new TrainingProgram
+        //        {
+        //            Name = "safety",
+        //            StartDate = startdate,
+        //            EndDate = enddate,
+        //            MaxAttendees = 50
+        //        };
+        //        var safetyAsJSON = JsonConvert.SerializeObject(safety);
+
+
+        //        var response = await client.PostAsync(
+        //            "/trainingprogram",
+        //            new StringContent(safetyAsJSON, Encoding.UTF8, "application/json")
+        //        );
+
+        //        response.EnsureSuccessStatusCode();
+
+        //        string responseBody = await response.Content.ReadAsStringAsync();
+        //        var newSafety = JsonConvert.DeserializeObject<TrainingProgram>(responseBody);
+
+        //        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        //        Assert.Equal("safety", newSafety.Name);
+        //        Assert.Equal(startdate, newSafety.StartDate);
+        //        Assert.Equal(enddate, newSafety.EndDate);
+        //        Assert.Equal(50, newSafety.MaxAttendees);
+
+
+        //        var deleteResponse = await client.DeleteAsync($"/trainingprogram/{newSafety.Id}");
+        //        deleteResponse.EnsureSuccessStatusCode();
+        //        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+        //    }
+        //}
+
         [Fact]
-        public async Task Test_Create_And_Delete_TrainingProgram()
+        public async Task Test_Delete_NonExistent_TrainingProgram_Fails()
         {
             using (var client = new APIClientProvider().Client)
             {
-                TrainingProgram safety = new TrainingProgram
-                {
-                    Name = "safety",
-                    StartDate = 1974-09-01 17:36:41Z;
-                    EndDate = 1888 - 09 - 01,
-                    MaxAttendees = 50
-                };
-                var safetyAsJSON = JsonConvert.SerializeObject(safety);
+                var deleteResponse = await client.DeleteAsync("/api/trainingprogram/600000");
 
-
-                var response = await client.PostAsync(
-                    "/trainingprogram",
-                    new StringContent(safetyAsJSON, Encoding.UTF8, "application/json")
-                );
-
-                response.EnsureSuccessStatusCode();
-
-                string responseBody = await response.Content.ReadAsStringAsync();
-                var newSafety = JsonConvert.DeserializeObject<TrainingProgram>(responseBody);
-
-                Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-                Assert.Equal("Helen", newSafety.Name);
-                Assert.Equal("Chalmers", newSafety.StartDate);
-                Assert.Equal("Helen Chalmers", newSafety.EndDate);
-                Assert.Equal(50, newSafety.MaxAttendees);
-
-
-                var deleteResponse = await client.DeleteAsync($"/trainingprogram/{newSafety.Id}");
-                deleteResponse.EnsureSuccessStatusCode();
-                Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+                Assert.False(deleteResponse.IsSuccessStatusCode);
+                Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
             }
         }
 
-        //[Fact]
-        //public async Task Test_Delete_NonExistent_TrainingProgram_Fails()
-        //{
-        //    using (var client = new APIClientProvider().Client)
-        //    {
-        //        var deleteResponse = await client.DeleteAsync("/api/trainingprogram/600000");
+        [Fact]
+        public async Task Test_Modify_TrainingProgram()
+        {
+            // New training program name to change to and test
 
-        //        Assert.False(deleteResponse.IsSuccessStatusCode);
-        //        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
-        //    }
-        //}
+            string newName = "PowerPoint";
+             DateTime startdate = DateTime.Now;
+            DateTime enddate = DateTime.Now;
 
-        //[Fact]
-        //public async Task Test_Modify_TrainingProgram()
-        //{
-        //    // New training program name to change to and test
-        //    string newName = "PowerPoint";
+            using (var client = new APIClientProvider().Client)
+            {
 
-        //    using (var client = new APIClientProvider().Client)
-        //    {
-        //        /*
-        //            PUT section
-        //         */
-        //        TrainingProgram modifiedProgram = new TrainingProgram
-        //        {
+        
+                TrainingProgram modifiedProgram = new TrainingProgram
+                {
+                    Name = newName,
+                    StartDate = startdate,
+                    EndDate = enddate,
+                    MaxAttendees = 50
+                };
+                var modifiedTrainingProgramAsJSON = JsonConvert.SerializeObject(modifiedProgram);
 
-        //            Name = newName,
-        //            StartDate = 1905-07-01T00,00,00,
-        //            EndDate = "1977-09-02",
-        //            MaxAttendees = 50
-        //        };
-        //        var modifiedTrainingProgramAsJSON = JsonConvert.SerializeObject(modifiedProgram);
+                var response = await client.PutAsync(
+                    "/api/trainingprogram/1",
+                    new StringContent(modifiedTrainingProgramAsJSON, Encoding.UTF8, "application/json")
+                );
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
 
-        //        var response = await client.PutAsync(
-        //            "/trainingprogram/1",
-        //            new StringContent(modifiedTrainingProgramAsJSON, Encoding.UTF8, "application/json")
-        //        );
-        //        response.EnsureSuccessStatusCode();
-        //        string responseBody = await response.Content.ReadAsStringAsync();
+                Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
-        //        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+                /*
+                    GET section
+                 */
+                var getEditTraining = await client.GetAsync("/api/trainingprogram/1");
+                getEditTraining.EnsureSuccessStatusCode();
 
-        //        /*
-        //            GET section
-        //         */
-        //        var getEditTraining = await client.GetAsync("/TrainingProgram/1");
-        //        getEditTraining.EnsureSuccessStatusCode();
+                string getTrainingProgramBody = await getEditTraining.Content.ReadAsStringAsync();
+                TrainingProgram newTrainingProgram = JsonConvert.DeserializeObject<TrainingProgram>(getTrainingProgramBody);
 
-        //        string getKateBody = await getKate.Content.ReadAsStringAsync();
-        //        Student newKate = JsonConvert.DeserializeObject<Student>(getKateBody);
-
-        //        Assert.Equal(HttpStatusCode.OK, getKate.StatusCode);
-        //        Assert.Equal(newLastName, newKate.LastName);
-        //    }
-        //}
+                Assert.Equal(HttpStatusCode.OK, getEditTraining.StatusCode);
+                //Assert.Equal(newName, newTrainingProgram.Name);
+            }
+        }
     }
 }
