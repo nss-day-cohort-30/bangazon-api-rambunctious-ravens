@@ -124,7 +124,7 @@ namespace BangazonAPI.Controllers
                                 WHERE Id = @id
                             ";
                         cmd.Parameters.Add(new SqlParameter("@name", productType.Name ));
-                        cmd.Parameters.Add(new SqlParameter("@id", productType.Id));
+                        cmd.Parameters.Add(new SqlParameter("@id", (id)));
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)

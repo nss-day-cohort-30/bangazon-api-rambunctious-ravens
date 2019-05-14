@@ -99,7 +99,7 @@ namespace BangazonAPI.Controllers
                                         ON p.ProductTypeId = pt.Id 
                                         JOIN Customer c
                                         ON p.CustomerId = c.Id
-                                        WHERE Id = @id";
+                                        WHERE p.Id = @id";
                                         
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
