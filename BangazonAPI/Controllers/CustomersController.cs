@@ -97,7 +97,7 @@ namespace BangazonAPI.Controllers
         }
 
         //POST api/values
-       [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> Post([FromBody] Customer customer)
         {
             using (SqlConnection conn = Connection)
@@ -176,10 +176,22 @@ namespace BangazonAPI.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
+                        cmd.CommandText = @"DELETE FROM PaymentType WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+                        //if (rowsAffected > 0)
+                        //{
+                        //    return new StatusCodeResult(StatusCodes.Status204NoContent);
+                        //}
+                        //throw new Exception("No rows affected");
+                    }
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
                         cmd.CommandText = @"DELETE FROM Customer WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
-                        int rowsAffected = cmd.ExecuteNonQuery();
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
                         if (rowsAffected > 0)
                         {
                             return new StatusCodeResult(StatusCodes.Status204NoContent);
