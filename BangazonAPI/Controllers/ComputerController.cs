@@ -104,18 +104,6 @@ namespace BangazonAPI.Controllers
 
                     Computer computer = null;
 
-                    //if (reader.Read())
-                    //{
-                    //    computer = new Computer
-                    //    {
-                    //        Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                    //        PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                    //        DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate")),
-                    //        Make = reader.GetString(reader.GetOrdinal("Make")),
-                    //        Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
-                    //    };
-                    //}
-
                     while (reader.Read())
                     {
                         DateTime? decomissionDate = null;
@@ -134,7 +122,6 @@ namespace BangazonAPI.Controllers
                                 // You might have more columns
                             };
 
-
                         }
 
                         else
@@ -148,9 +135,7 @@ namespace BangazonAPI.Controllers
                                 // You might have more columns
                             };
 
-
                         }
-
 
                     }
                         reader.Close();
@@ -215,51 +200,77 @@ namespace BangazonAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Computer computer)
         {
+            string sqlWithOutdecom = @"
+                        INSERT INTO Computer (PurchaseDate, Make, Manufacturer)
+                        OUTPUT INSERTED.Id
+                        VALUES (@PurchaseDate, @Make, @Manufacturer)
+                        ";
+
+            string sqlWithdecom = @"
+                        INSERT INTO Computer (PurchaseDate, DecomissionDate, Make, Manufacturer)
+                        OUTPUT INSERTED.Id
+                        VALUES (@PurchaseDate, @DecomissionDate, @Make, @Manufacturer)
+                        ";
             try
             {
                 using (SqlConnection conn = Connection)
                 {
                     conn.Open();
-                    using (SqlCommand cmd = conn.CreateCommand())
-                    {
-                        cmd.CommandText = @"
-                            UPDATE Computer
-                            SET PurchaseDate = @PurchaseDate
-                                DecomissionDate = @DecomissionDate
-                                Make = @Make
-                                Manufacturer = @Manufacturer
-                            WHERE Id = @id
-                        ";
-                        cmd.Parameters.Add(new SqlParameter("@id", computer.Id));
-                        cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
-                        cmd.Parameters.Add(new SqlParameter("@DecomissionDate", computer.DecomissionDate));
-                        cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
-                        cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
 
-
-
-                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                        if (rowsAffected > 0)
+                        if (computer.DecomissionDate == null)
                         {
-                            return new StatusCodeResult(StatusCodes.Status204NoContent);
-                        }
+                            using (SqlCommand cmd = conn.CreateCommand())
+                            {
+                                cmd.CommandText = sqlWithOutdecom;
+                                cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
+                                cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
+                                cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
 
-                        throw new Exception("No rows affected");
+                                computer.Id = (int)await cmd.ExecuteScalarAsync();
+
+                                return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
+                            }
+                        }
+                        using (SqlCommand cmd = conn.CreateCommand())
+                        {
+
+                            cmd.CommandText = sqlWithdecom;
+                            cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
+                            cmd.Parameters.Add(new SqlParameter("@DecomissionDate", computer.DecomissionDate));
+                            cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
+                            cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
+
+                            computer.Id = (int)await cmd.ExecuteScalarAsync();
+
+                            return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
+                        }
+                    
+
+
+                        //int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                        //if (rowsAffected > 0)
+                        //{
+                        //    return new StatusCodeResult(StatusCodes.Status204NoContent);
+                        //}
+
+                        //throw new Exception("No rows affected");
                     }
                 }
-            }
-            catch (Exception)
+
+            
+                    catch (Exception)
             {
                 if (!ComputerExists(id))
                 {
                     return NotFound();
-                }
+    }
                 else
                 {
                     throw;
                 }
             }
+
         }
 
         // DELETE api/values/5
