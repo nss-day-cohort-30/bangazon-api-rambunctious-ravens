@@ -162,7 +162,7 @@ namespace BangazonAPI.Controllers
                              MaxAttendees = @MaxAttendees
                             WHERE Id = @id
                         ";
-                        cmd.Parameters.Add(new SqlParameter("@id", trainingprogram.Id));
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
                         cmd.Parameters.Add(new SqlParameter("@Name", trainingprogram.Name));
                         cmd.Parameters.Add(new SqlParameter("@StartDate", trainingprogram.StartDate));
                         cmd.Parameters.Add(new SqlParameter("@EndDate", trainingprogram.EndDate));

@@ -64,46 +64,48 @@ namespace TestBangazonAPI
         }
 
 
-        //[Fact]
-        //public async Task Test_Create_And_Delete_TrainingProgram()
-        //{
-        //    DateTime startdate = DateTime.Now;
-        //    DateTime enddate = DateTime.Now;
-
-        //    using (var client = new APIClientProvider().Client)
-        //    {
-        //        TrainingProgram safety = new TrainingProgram
-        //        {
-        //            Name = "safety",
-        //            StartDate = startdate,
-        //            EndDate = enddate,
-        //            MaxAttendees = 50
-        //        };
-        //        var safetyAsJSON = JsonConvert.SerializeObject(safety);
 
 
-        //        var response = await client.PostAsync(
-        //            "/trainingprogram",
-        //            new StringContent(safetyAsJSON, Encoding.UTF8, "application/json")
-        //        );
+        [Fact]
+        public async Task Test_Create_And_Delete_TrainingProgram()
+        {
+            DateTime startdate = DateTime.Now;
+            DateTime enddate = DateTime.Now;
 
-        //        response.EnsureSuccessStatusCode();
+            using (var client = new APIClientProvider().Client)
+            {
+                TrainingProgram safety = new TrainingProgram
+                {
+                    Name = "safety",
+                    StartDate = startdate,
+                    EndDate = enddate,
+                    MaxAttendees = 50
+                };
+                var safetyAsJSON = JsonConvert.SerializeObject(safety);
 
-        //        string responseBody = await response.Content.ReadAsStringAsync();
-        //        var newSafety = JsonConvert.DeserializeObject<TrainingProgram>(responseBody);
 
-        //        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        //        Assert.Equal("safety", newSafety.Name);
-        //        Assert.Equal(startdate, newSafety.StartDate);
-        //        Assert.Equal(enddate, newSafety.EndDate);
-        //        Assert.Equal(50, newSafety.MaxAttendees);
+                var response = await client.PostAsync(
+                    "api/trainingprogram",
+                    new StringContent(safetyAsJSON, Encoding.UTF8, "application/json")
+                );
+
+                response.EnsureSuccessStatusCode();
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var newSafety = JsonConvert.DeserializeObject<TrainingProgram>(responseBody);
+
+                Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+                Assert.Equal("safety", newSafety.Name);
+                Assert.Equal(startdate, newSafety.StartDate);
+                Assert.Equal(enddate, newSafety.EndDate);
+                Assert.Equal(50, newSafety.MaxAttendees);
 
 
-        //        var deleteResponse = await client.DeleteAsync($"/trainingprogram/{newSafety.Id}");
-        //        deleteResponse.EnsureSuccessStatusCode();
-        //        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
-        //    }
-        //}
+                var deleteResponse = await client.DeleteAsync($"api/trainingprogram/{newSafety.Id}");
+                deleteResponse.EnsureSuccessStatusCode();
+                Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
+            }
+        }
 
         [Fact]
         public async Task Test_Delete_NonExistent_TrainingProgram_Fails()
@@ -128,8 +130,6 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-
-        
                 TrainingProgram modifiedProgram = new TrainingProgram
                 {
                     Name = newName,
@@ -140,7 +140,7 @@ namespace TestBangazonAPI
                 var modifiedTrainingProgramAsJSON = JsonConvert.SerializeObject(modifiedProgram);
 
                 var response = await client.PutAsync(
-                    "/api/trainingprogram/1",
+                    "api/trainingprogram/1",
                     new StringContent(modifiedTrainingProgramAsJSON, Encoding.UTF8, "application/json")
                 );
                 response.EnsureSuccessStatusCode();
@@ -148,10 +148,8 @@ namespace TestBangazonAPI
 
                 Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
-                /*
-                    GET section
-                 */
-                var getEditTraining = await client.GetAsync("/api/trainingprogram/1");
+                
+                var getEditTraining = await client.GetAsync("api/trainingprogram/1");
                 getEditTraining.EnsureSuccessStatusCode();
 
                 string getTrainingProgramBody = await getEditTraining.Content.ReadAsStringAsync();
