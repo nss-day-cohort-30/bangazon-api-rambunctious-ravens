@@ -39,7 +39,12 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT ProductType.Name, CustomerId, Price, Title, [Description], Quantity FROM Product LEFT JOIN ProductType ON Product.ProductTypeId = ProductType.Id ";
+                    cmd.CommandText = @"SELECT p.Id productId, pt.Name, p.ProductTypeId, p.CustomerId, pt.Id pTId, c.Id cId, c.FirstName , c.LastName, p.Price, p.Title, p.Description, p.Quantity 
+                                        FROM Product p
+                                        JOIN ProductType pt 
+                                        ON p.ProductTypeId = pt.Id 
+                                        JOIN Customer c
+                                        ON p.CustomerId = c.Id";
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
                     List<Product> products = new List<Product>();
@@ -47,13 +52,26 @@ namespace BangazonAPI.Controllers
                     {
                         Product product = new Product
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Id = reader.GetInt32(reader.GetOrdinal("productId")),
                             Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                             ProductTypeId = reader.GetInt32(reader.GetOrdinal("ProductTypeId")),
                             CustomerId = reader.GetInt32(reader.GetOrdinal("CustomerId")),
+                            ProductType = new ProductType
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("pTId")),
+                                Name = reader.GetString(reader.GetOrdinal("Name"))
+                            },
+                            Customer = new Customer
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("customerId")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName"))
+
+                            },
                             Title = reader.GetString(reader.GetOrdinal("Title")),
                             Description = reader.GetString(reader.GetOrdinal("Description")),
-                            Quantity = reader.GetInt32(reader.GetOrdinal("Quantity"))
+                            Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
+                            
                         };
 
                         products.Add(product);
@@ -75,7 +93,14 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT ProductType.Name, Customer.FirstName , Customer.LastName, Price, Title, [Description], Quantity FROM ProductLEFT JOIN ProductType ON Product.ProductTypeId = ProductType.Id LEFT JOIN Customer ON Product.CustomerId = Customer.Id";
+                    cmd.CommandText = @"SELECT p.Id productId, pt.Name, p.ProductTypeId, p.CustomerId, pt.Id pTId, c.Id cId, c.FirstName , c.LastName, p.Price, p.Title, p.Description, p.Quantity 
+                                        FROM Product p
+                                        JOIN ProductType pt 
+                                        ON p.ProductTypeId = pt.Id 
+                                        JOIN Customer c
+                                        ON p.CustomerId = c.Id
+                                        WHERE Id = @id";
+                                        
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
@@ -84,14 +109,25 @@ namespace BangazonAPI.Controllers
                     {
                         product = new Product
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                            Id = reader.GetInt32(reader.GetOrdinal("productId")),
                             Price = reader.GetDecimal(reader.GetOrdinal("Price")),
                             ProductTypeId = reader.GetInt32(reader.GetOrdinal("ProductTypeId")),
                             CustomerId = reader.GetInt32(reader.GetOrdinal("CustomerId")),
+                            ProductType = new ProductType
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("pTId")),
+                                Name = reader.GetString(reader.GetOrdinal("Name"))
+                            },
+                            Customer = new Customer
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("customerId")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName"))
+
+                            },
                             Title = reader.GetString(reader.GetOrdinal("Title")),
                             Description = reader.GetString(reader.GetOrdinal("Description")),
                             Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
-                            // You might have more columns
                         };
                     }
 

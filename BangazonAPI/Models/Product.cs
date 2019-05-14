@@ -19,6 +19,8 @@ namespace BangazonAPI.Models
         public string Description { get; set; }
         [Required]
         public int Quantity { get; set; }
+        public ProductType ProductType { get; set; }
+        public Customer Customer { get; set; }
 
     }
 }
