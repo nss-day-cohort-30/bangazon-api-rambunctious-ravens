@@ -46,14 +46,19 @@ namespace BangazonAPI.Controllers
                     List<Computer> computers = new List<Computer>();
                     while (reader.Read())
                     {
-                        if (reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
+                        DateTime? decommissionDate = null;
+
+                        if (!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
                         {
+                            decommissionDate = reader.GetDateTime(reader.GetOrdinal("DecommissionDate"));
+
                             Computer computer = new Computer
                             {
                                 Id = reader.GetInt32(reader.GetOrdinal("Id")),
                                 PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
                                 Make = reader.GetString(reader.GetOrdinal("Make")),
-                                Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                                Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
+                                DecomissionDate = decommissionDate
                                 // You might have more columns
                             };
 
@@ -74,11 +79,11 @@ namespace BangazonAPI.Controllers
 
                             computers.Add(computer);
                         }
+
+                        reader.Close();
+
                     }
-
-                    reader.Close();
-
-                    return Ok(computers);
+                        return Ok(computers);
                 }
             }
         }
@@ -169,6 +174,8 @@ namespace BangazonAPI.Controllers
                         cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
                         cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
 
+
+
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
@@ -204,7 +211,23 @@ namespace BangazonAPI.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = "DELETE FROM ComputerEmployee WHERE Id = @id";
+                        cmd.CommandText = "DELETE FROM ComputerEmployee WHERE ComputerId = @id";
+                        //cmd.CommandText = "DELETE FROM Computer WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
+
+                        //if (rowsAffected > 0)
+                        //{
+                        //    return new StatusCodeResult(StatusCodes.Status204NoContent);
+                        //}
+
+                        //throw new Exception("No rows affected");
+                    }
+                    
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        //cmd.CommandText = "DELETE FROM ComputerEmployee WHERE ComputerId = @id";
                         cmd.CommandText = "DELETE FROM Computer WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
@@ -217,7 +240,9 @@ namespace BangazonAPI.Controllers
 
                         throw new Exception("No rows affected");
                     }
+
                 }
+
             }
             catch (Exception)
             {
@@ -230,6 +255,7 @@ namespace BangazonAPI.Controllers
                     throw;
                 }
             }
+
         }
 
 
