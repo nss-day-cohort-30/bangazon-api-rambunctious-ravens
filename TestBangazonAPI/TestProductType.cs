@@ -122,11 +122,11 @@ namespace TestBangazonAPI
                     Name = newProductTypeName,
                 };
 
-                var modiefiedAmexAsJSON = JsonConvert.SerializeObject(modiefiedRaft);
+                var modiefiedProductTypeAsJSON = JsonConvert.SerializeObject(modiefiedRaft);
 
                 var response = await client.PutAsync(
                     "/api/producttype/3",
-                    new StringContent(modiefiedAmexAsJSON, Encoding.UTF8, "application/json")
+                    new StringContent(modiefiedProductTypeAsJSON, Encoding.UTF8, "application/json")
                 );
                 string responseBody = await response.Content.ReadAsStringAsync();
 
@@ -135,14 +135,14 @@ namespace TestBangazonAPI
                 /*
                     GET section
                  */
-                var getNiall = await client.GetAsync("/api/producttype/3");
-                getNiall.EnsureSuccessStatusCode();
+                var getProductType = await client.GetAsync("/api/producttype/3");
+                getProductType.EnsureSuccessStatusCode();
 
-                string getNiallBody = await getNiall.Content.ReadAsStringAsync();
-                ProductType newNiall = JsonConvert.DeserializeObject<ProductType>(getNiallBody);
+                string getProductTypeBody = await getProductType.Content.ReadAsStringAsync();
+                ProductType newProductType = JsonConvert.DeserializeObject<ProductType>(getProductTypeBody);
 
-                Assert.Equal(HttpStatusCode.OK, getNiall.StatusCode);
-                Assert.Equal(newProductTypeName, newNiall.Name);
+                Assert.Equal(HttpStatusCode.OK, getProductType.StatusCode);
+                Assert.Equal(newProductTypeName, newProductType.Name);
             }
         }
     }

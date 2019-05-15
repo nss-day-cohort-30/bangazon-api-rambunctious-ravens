@@ -79,7 +79,8 @@ namespace BangazonAPI.Controllers
                             Name = reader.GetString(reader.GetOrdinal("Name")),
                         };
                     }
-
+                    if (!ProductTypeExists(id))
+                    { return NotFound(); };
                     reader.Close();
 
                     return Ok(productType);

@@ -57,7 +57,7 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("/product/999999999");
+                var response = await client.GetAsync("api/product/999999999");
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }
@@ -68,91 +68,96 @@ namespace TestBangazonAPI
         {
             using (var client = new APIClientProvider().Client)
             {
-                Product helen = new Product
+                Product BookOnPlants = new Product
                 {
-                    FirstName = "Helen",
-                    LastName = "Chalmers",
-                    CohortId = 1,
-                    SlackHandle = "Helen Chalmers"
+                    ProductTypeId = 1,
+                    CustomerId = 1,
+                    Description = "A book on edible plants",
+                    Price = 20,
+                    Title = "Do eat these",
+                    Quantity = 40,
                 };
-                var helenAsJSON = JsonConvert.SerializeObject(helen);
+                var BookOnPlantsAsJSON = JsonConvert.SerializeObject(BookOnPlants);
 
 
                 var response = await client.PostAsync(
-                    "/student",
-                    new StringContent(helenAsJSON, Encoding.UTF8, "application/json")
+                    "api/product",
+                    new StringContent(BookOnPlantsAsJSON, Encoding.UTF8, "application/json")
                 );
 
                 response.EnsureSuccessStatusCode();
 
                 string responseBody = await response.Content.ReadAsStringAsync();
-                var newHelen = JsonConvert.DeserializeObject<Product>(responseBody);
+                var newBookOnPlants = JsonConvert.DeserializeObject<Product>(responseBody);
 
                 Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-                Assert.Equal("Helen", newHelen.FirstName);
-                Assert.Equal("Chalmers", newHelen.LastName);
-                Assert.Equal("Helen Chalmers", newHelen.SlackHandle);
+                Assert.Equal("A book on edible plants", newBookOnPlants.Description);
+                Assert.Equal(20, newBookOnPlants.Price);
+                Assert.Equal("Do eat these", newBookOnPlants.Title);
+                Assert.Equal(40, newBookOnPlants.Quantity);
 
 
-                var deleteResponse = await client.DeleteAsync($"/student/{newHelen.Id}");
+                var deleteResponse = await client.DeleteAsync($"api/product/{newBookOnPlants.Id}");
                 deleteResponse.EnsureSuccessStatusCode();
                 Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
             }
         }
 
-        //[Fact]
-        //public async Task Test_Delete_NonExistent_Student_Fails()
-        //{
-        //    using (var client = new APIClientProvider().Client)
-        //    {
-        //        var deleteResponse = await client.DeleteAsync("/api/students/600000");
+        [Fact]
+        public async Task Test_Delete_NonExistent_Student_Fails()
+        {
+            using (var client = new APIClientProvider().Client)
+            {
+                var deleteResponse = await client.DeleteAsync("/api/product/600000");
 
-        //        Assert.False(deleteResponse.IsSuccessStatusCode);
-        //        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
-        //    }
-        //}
+                Assert.False(deleteResponse.IsSuccessStatusCode);
+                Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+            }
+        }
 
-        //[Fact]
-        //public async Task Test_Modify_Student()
-        //{
-        //    // New last name to change to and test
-        //    string newLastName = "Williams-Spradlin";
+        [Fact]
+        public async Task Test_Modify_Product()
+        {
+            // New last name to change to and test
+            string newDescription = "The Bee is no longer large";
 
-        //    using (var client = new APIClientProvider().Client)
-        //    {
-        //        /*
-        //            PUT section
-        //         */
-        //        Student modifiedKate = new Student
-        //        {
-        //            FirstName = "Kate",
-        //            LastName = newLastName,
-        //            CohortId = 1,
-        //            SlackHandle = "@katerebekah"
-        //        };
-        //        var modifiedKateAsJSON = JsonConvert.SerializeObject(modifiedKate);
+            using (var client = new APIClientProvider().Client)
+            {
+                /*
+                    PUT section
+                 */
+                Product modifiedProduct= new Product
+                {
+                    CustomerId = 1,
+                    ProductTypeId = 1,
+                    Title = "A Big Bee",
+                    Price = 1000,
+                    Description = newDescription ,
+                    Quantity = 3,
+                };
+                var modifiedProductJSON = JsonConvert.SerializeObject(modifiedProduct);
 
-        //        var response = await client.PutAsync(
-        //            "/student/1",
-        //            new StringContent(modifiedKateAsJSON, Encoding.UTF8, "application/json")
-        //        );
-        //        response.EnsureSuccessStatusCode();
-        //        string responseBody = await response.Content.ReadAsStringAsync();
+                var response = await client.PutAsync(
+                    "/api/product/1",
+                    new StringContent(modifiedProductJSON, Encoding.UTF8, "application/json")
+                );
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
 
-        //        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+                Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
-        //        /*
-        //            GET section
-        //         */
-        //        var getKate = await client.GetAsync("/student/1");
-        //        getKate.EnsureSuccessStatusCode();
+                /*
+                    GET section
+                 */
+                var getProduct = await client.GetAsync("/api/product/1");
+                getProduct.EnsureSuccessStatusCode();
 
-        //        string getKateBody = await getKate.Content.ReadAsStringAsync();
-        //        Student newKate = JsonConvert.DeserializeObject<Student>(getKateBody);
+                string getProductBody = await getProduct.Content.ReadAsStringAsync();
+                Product newProduct = JsonConvert.DeserializeObject<Product>(getProductBody);
 
-        //        Assert.Equal(HttpStatusCode.OK, getKate.StatusCode);
-        //        Assert.Equal(newLastName, newKate.LastName);
-        //    }
-        //}
+                Assert.Equal(HttpStatusCode.OK, getProduct.StatusCode);
+                Assert.Equal(newDescription, newProduct.Description);
+            }
+        }
     }
 }
