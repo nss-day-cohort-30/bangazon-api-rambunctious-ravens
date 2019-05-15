@@ -245,16 +245,6 @@ namespace BangazonAPI.Controllers
                             return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
                         }
                     
-
-
-                        //int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                        //if (rowsAffected > 0)
-                        //{
-                        //    return new StatusCodeResult(StatusCodes.Status204NoContent);
-                        //}
-
-                        //throw new Exception("No rows affected");
                     }
                 }
 
