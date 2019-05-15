@@ -15,6 +15,8 @@ namespace BangazonAPI.Controllers
     [ApiController]
     public class ComputerController : ControllerBase
     {
+        //This controller was made by Justina and Sam
+        //All of our fetch call methods for computers are created here
         private readonly IConfiguration _config;
 
         public ComputerController(IConfiguration config)
@@ -31,6 +33,8 @@ namespace BangazonAPI.Controllers
         }
 
         // GET api/values
+        //Using an if else for our Get to check if decomissionDate is null, if it is not add it to the object
+        //if it is don't add it
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -90,6 +94,9 @@ namespace BangazonAPI.Controllers
         }
 
         // GET api/values/5
+        //Get a single item
+        //Using an if else for our Get to check if decomissionDate is null, if it is not add it to the object
+        //if it is don't add it
         [HttpGet("{id}", Name = "GetComputer")]
         public async Task<IActionResult> Get(int id)
         {
@@ -110,6 +117,8 @@ namespace BangazonAPI.Controllers
 
                         if (!reader.IsDBNull(reader.GetOrdinal("DecomissionDate")))
                         {
+                            //creating a variable for decomissionDate outside of the scope of the object we are creating allows
+                            //us to use the boolean value for it
                             decomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
 
                             computer = new Computer
@@ -266,9 +275,6 @@ namespace BangazonAPI.Controllers
                         throw new Exception("No rows affected");
                     }
 
-                    //computer.Id = (int)await cmd.ExecuteScalarAsync();
-
-                    //    return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
                 }
 
 
