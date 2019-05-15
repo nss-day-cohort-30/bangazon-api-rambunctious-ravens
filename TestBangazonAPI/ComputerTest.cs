@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using System.Linq;
+using System;
 
 namespace TestBangazonAPI
 {
@@ -68,93 +69,103 @@ namespace TestBangazonAPI
         [Fact]
         public async Task Test_Create_And_Delete_Computer()
         {
+            DateTime purchaseDate = DateTime.Now;
+            DateTime decomissionDate = DateTime.Now;
+
             using (var client = new APIClientProvider().Client)
             {
-                Computer helen = new Computer
+                Computer computerOne = new Computer
                 {
                     Make = "Goddard",
                     Manufacturer = "Lenovo",
-                    PurchaseDate = 12/12/2020,
-                    DecomissionDate = null
+                    PurchaseDate = purchaseDate,
+                    DecomissionDate = decomissionDate
                 };
-                var helenAsJSON = JsonConvert.SerializeObject(helen);
+                var computerOneAsJSON = JsonConvert.SerializeObject(computerOne);
 
 
-                //            var response = await client.PostAsync(
-                //                "/computer",
-                //                new StringContent(helenAsJSON, Encoding.UTF8, "application/json")
-                //            );
+                var response = await client.PostAsync(
+                    "api/Computer",
+                    new StringContent(computerOneAsJSON, Encoding.UTF8, "application/json")
+                );
 
-                //            response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
-                //            string responseBody = await response.Content.ReadAsStringAsync();
-                //            var newHelen = JsonConvert.DeserializeObject<Computer>(responseBody);
+                string responseBody = await response.Content.ReadAsStringAsync();
+                var newComputer = JsonConvert.DeserializeObject<Computer>(responseBody);
 
-                //            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-                //            Assert.Equal("Helen", newHelen.FirstName);
-                //            Assert.Equal("Chalmers", newHelen.LastName);
-                //            Assert.Equal("Helen Chalmers", newHelen.SlackHandle);
+                Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+                Assert.Equal("Goddard", newComputer.Make);
+                Assert.Equal("Lenovo", newComputer.Manufacturer);
+                Assert.Equal(purchaseDate, newComputer.PurchaseDate);
+                Assert.Equal(decomissionDate, newComputer.DecomissionDate);
 
 
-                //            var deleteResponse = await client.DeleteAsync($"/computer/{newHelen.Id}");
-                //            deleteResponse.EnsureSuccessStatusCode();
-                //            Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
-                //        }
-                //    }
-
-                //    [Fact]
-                //    public async Task Test_Delete_NonExistent_Computer_Fails()
-                //    {
-                //        using (var client = new APIClientProvider().Client)
-                //        {
-                //            var deleteResponse = await client.DeleteAsync("/api/computers/600000");
-
-                //            Assert.False(deleteResponse.IsSuccessStatusCode);
-                //            Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
-                //        }
-                //    }
-
-                //    [Fact]
-                //    public async Task Test_Modify_Computer()
-                //    {
-                //        // New last name to change to and test
-                //        string newLastName = "Williams-Spradlin";
-
-                //        using (var client = new APIClientProvider().Client)
-                //        {
-                //            /*
-                //                PUT section
-                //             */
-                //            Computer modifiedKate = new Computer
-                //            {
-                //                FirstName = "Kate",
-                //                LastName = newLastName,
-                //                CohortId = 1,
-                //                SlackHandle = "@katerebekah"
-                //            };
-                //            var modifiedKateAsJSON = JsonConvert.SerializeObject(modifiedKate);
-
-                //            var response = await client.PutAsync(
-                //                "/computer/1",
-                //                new StringContent(modifiedKateAsJSON, Encoding.UTF8, "application/json")
-                //            );
-                //            response.EnsureSuccessStatusCode();
-                //            string responseBody = await response.Content.ReadAsStringAsync();
-
-                //            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-
-                //            /*
-                //                GET section
-                //             */
-                //            var getKate = await client.GetAsync("/computer/1");
-                //            getKate.EnsureSuccessStatusCode();
-
-                //            string getKateBody = await getKate.Content.ReadAsStringAsync();
-                //            Computer newKate = JsonConvert.DeserializeObject<Computer>(getKateBody);
-
-                //            Assert.Equal(HttpStatusCode.OK, getKate.StatusCode);
-                //            Assert.Equal(newLastName, newKate.LastName);
-                //        }
-                //    }
+                var deleteResponse = await client.DeleteAsync($"api/Computer/{newComputer.Id}");
+                deleteResponse.EnsureSuccessStatusCode();
+                Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
             }
+        }
+
+        [Fact]
+        public async Task Test_Delete_NonExistent_Computer_Fails()
+        {
+            using (var client = new APIClientProvider().Client)
+            {
+                var deleteResponse = await client.DeleteAsync("/api/Computers/600000");
+
+                Assert.False(deleteResponse.IsSuccessStatusCode);
+                Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task Test_Modify_Computer()
+        {
+            DateTime purchaseDate = DateTime.Now;
+            DateTime decomissionDate = DateTime.Now;
+
+            // New computer make, to change to and test
+            //string newComputerMake = "Dell";
+
+            using (var client = new APIClientProvider().Client)
+            {
+                /*
+                    PUT section
+                 */
+                Computer modifiedComputer = new Computer
+                {
+                    Make = "Goddard",
+                    Manufacturer = "Lenovo",
+                    PurchaseDate = purchaseDate,
+                    DecomissionDate = decomissionDate
+                
+                };
+                var modifiedComputerAsJSON = JsonConvert.SerializeObject(modifiedComputer);
+
+                var response = await client.PutAsync(
+                    "api/Computer/16",
+                    new StringContent(modifiedComputerAsJSON, Encoding.UTF8, "application/json")
+                );
+                response.EnsureSuccessStatusCode();
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+                /*
+                    GET section
+                 */
+                var getComputer = await client.GetAsync("api/Computer/16");
+                getComputer.EnsureSuccessStatusCode();
+
+                string getComputerBody = await getComputer.Content.ReadAsStringAsync();
+                Computer newComputer = JsonConvert.DeserializeObject<Computer>(getComputerBody);
+
+                Assert.Equal(HttpStatusCode.OK, getComputer.StatusCode);
+                Assert.Equal(purchaseDate, newComputer.PurchaseDate);
+                Assert.Equal(decomissionDate, newComputer.DecomissionDate);
+
+            }
+        }
+    }
 }

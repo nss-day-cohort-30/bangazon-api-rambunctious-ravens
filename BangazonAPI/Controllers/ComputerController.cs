@@ -60,7 +60,7 @@ namespace BangazonAPI.Controllers
                                 Make = reader.GetString(reader.GetOrdinal("Make")),
                                 Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
                                 DecomissionDate = decomissionDate
-                               
+
                             };
 
                             computers.Add(computer);
@@ -74,7 +74,7 @@ namespace BangazonAPI.Controllers
                                 PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
                                 Make = reader.GetString(reader.GetOrdinal("Make")),
                                 Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
-                              
+
                             };
 
                             computers.Add(computer);
@@ -119,7 +119,7 @@ namespace BangazonAPI.Controllers
                                 Make = reader.GetString(reader.GetOrdinal("Make")),
                                 Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
                                 DecomissionDate = decomissionDate
-                                
+
                             };
 
                         }
@@ -132,12 +132,12 @@ namespace BangazonAPI.Controllers
                                 PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
                                 Make = reader.GetString(reader.GetOrdinal("Make")),
                                 Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
-                                
+
                             };
 
                         }
-                    // check to see if id exists, if it does not
-                    // return status code 404
+                        // check to see if id exists, if it does not
+                        // return status code 404
                     }
                     if (!ComputerExists(id))
                     {
@@ -209,15 +209,20 @@ namespace BangazonAPI.Controllers
         {
             // sql statement to be acted upon if decomission date is null
             string sqlWithOutdecom = @"
-                        INSERT INTO Computer (PurchaseDate, Make, Manufacturer)
-                        OUTPUT INSERTED.Id
-                        VALUES (@PurchaseDate, @Make, @Manufacturer)
+                        UPDATE Computer 
+                        SET Make = @Make,
+                            Manufacturer = @Manufacturer,
+                            PurchaseDate = @PurchaseDate,
+                        WHERE Id = @id;
                         ";
             // sql statement if decomission date is NOT null
             string sqlWithdecom = @"
-                        INSERT INTO Computer (PurchaseDate, DecomissionDate, Make, Manufacturer)
-                        OUTPUT INSERTED.Id
-                        VALUES (@PurchaseDate, @DecomissionDate, @Make, @Manufacturer)
+                        UPDATE Computer 
+                        SET Make = @Make,
+                            Manufacturer = @Manufacturer,
+                            PurchaseDate = @PurchaseDate,
+                            DecomissionDate = @DecomissionDate
+                        WHERE Id = @id;
                         ";
             try
             {
@@ -234,6 +239,7 @@ namespace BangazonAPI.Controllers
                             cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
                             cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
                             cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
+                            cmd.Parameters.Add(new SqlParameter("@id", id));
 
                             computer.Id = (int)await cmd.ExecuteScalarAsync();
 
@@ -248,13 +254,24 @@ namespace BangazonAPI.Controllers
                         cmd.Parameters.Add(new SqlParameter("@DecomissionDate", computer.DecomissionDate));
                         cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
                         cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
 
-                        computer.Id = (int)await cmd.ExecuteScalarAsync();
+                        int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
-                        return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
+                        if (rowsAffected > 0)
+                        {
+                            return new StatusCodeResult(StatusCodes.Status204NoContent);
+                        }
+
+                        throw new Exception("No rows affected");
                     }
 
+                    //computer.Id = (int)await cmd.ExecuteScalarAsync();
+
+                    //    return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
                 }
+
+
             }
 
 
