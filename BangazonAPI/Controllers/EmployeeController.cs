@@ -127,11 +127,14 @@ namespace BangazonAPI.Controllers
                             }
                         };
                     }
-
+                    if (!EmployeeExists(id))
+                    {
+                        return NotFound();
+                    }
                     reader.Close();
-
                     return Ok(employee);
                 }
+
             }
         }
 
@@ -144,7 +147,7 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    
+
                     cmd.CommandText = @"
                         INSERT INTO Employee (FirstName, LastName, IsSuperVisor, DepartmentId)
                         OUTPUT INSERTED.Id

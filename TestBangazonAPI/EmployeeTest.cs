@@ -50,16 +50,16 @@ namespace TestEmployeeExercisesAPI
             }
         }
 
-        //[Fact]
-        //public async Task Test_Get_NonExitant_Employee_Fails()
-        //{
+        [Fact]
+        public async Task Test_Get_NonExitant_Employee_Fails()
+        {
 
-        //    using (var client = new APIClientProvider().Client)
-        //    {
-        //        var response = await client.GetAsync("api/Employee/999999999");
-        //        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        //    }
-        //}
+            using (var client = new APIClientProvider().Client)
+            {
+                var response = await client.GetAsync("api/Employee/999999999");
+                Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            }
+        }
 
 
         [Fact]
