@@ -60,7 +60,7 @@ namespace BangazonAPI.Controllers
                                 Make = reader.GetString(reader.GetOrdinal("Make")),
                                 Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
                                 DecomissionDate = decomissionDate
-                                // You might have more columns
+                               
                             };
 
                             computers.Add(computer);
@@ -74,13 +74,13 @@ namespace BangazonAPI.Controllers
                                 PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
                                 Make = reader.GetString(reader.GetOrdinal("Make")),
                                 Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
-                                // You might have more columns
+                              
                             };
 
                             computers.Add(computer);
                         }
 
-                        
+
 
                     }
                     reader.Close();
@@ -119,7 +119,7 @@ namespace BangazonAPI.Controllers
                                 Make = reader.GetString(reader.GetOrdinal("Make")),
                                 Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
                                 DecomissionDate = decomissionDate
-                                // You might have more columns
+                                
                             };
 
                         }
@@ -132,14 +132,19 @@ namespace BangazonAPI.Controllers
                                 PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
                                 Make = reader.GetString(reader.GetOrdinal("Make")),
                                 Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
-                                // You might have more columns
+                                
                             };
 
                         }
-
+                    // check to see if id exists, if it does not
+                    // return status code 404
                     }
-                        reader.Close();
-                        return Ok(computer);
+                    if (!ComputerExists(id))
+                    {
+                        return NotFound();
+                    }
+                    reader.Close();
+                    return Ok(computer);
                 }
             }
         }
@@ -148,12 +153,14 @@ namespace BangazonAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Computer computer)
         {
+            // sql statement to be acted upon if decomission date is null
             string sqlWithOutdecom = @"
                         INSERT INTO Computer (PurchaseDate, Make, Manufacturer)
                         OUTPUT INSERTED.Id
                         VALUES (@PurchaseDate, @Make, @Manufacturer)
                         ";
 
+            // sql statement if decomission date is NOT null
             string sqlWithdecom = @"
                         INSERT INTO Computer (PurchaseDate, DecomissionDate, Make, Manufacturer)
                         OUTPUT INSERTED.Id
@@ -200,12 +207,13 @@ namespace BangazonAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Computer computer)
         {
+            // sql statement to be acted upon if decomission date is null
             string sqlWithOutdecom = @"
                         INSERT INTO Computer (PurchaseDate, Make, Manufacturer)
                         OUTPUT INSERTED.Id
                         VALUES (@PurchaseDate, @Make, @Manufacturer)
                         ";
-
+            // sql statement if decomission date is NOT null
             string sqlWithdecom = @"
                         INSERT INTO Computer (PurchaseDate, DecomissionDate, Make, Manufacturer)
                         OUTPUT INSERTED.Id
@@ -217,26 +225,13 @@ namespace BangazonAPI.Controllers
                 {
                     conn.Open();
 
-                        if (computer.DecomissionDate == null)
-                        {
-                            using (SqlCommand cmd = conn.CreateCommand())
-                            {
-                                cmd.CommandText = sqlWithOutdecom;
-                                cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
-                                cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
-                                cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
-
-                                computer.Id = (int)await cmd.ExecuteScalarAsync();
-
-                                return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
-                            }
-                        }
+                    if (computer.DecomissionDate == null)
+                    {
                         using (SqlCommand cmd = conn.CreateCommand())
                         {
-
-                            cmd.CommandText = sqlWithdecom;
+                            // if the decomission date is null, do not include it
+                            cmd.CommandText = sqlWithOutdecom;
                             cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
-                            cmd.Parameters.Add(new SqlParameter("@DecomissionDate", computer.DecomissionDate));
                             cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
                             cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
 
@@ -244,17 +239,31 @@ namespace BangazonAPI.Controllers
 
                             return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
                         }
-                    
                     }
-                }
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        // if the decomission date exists AND is not null, include it
+                        cmd.CommandText = sqlWithdecom;
+                        cmd.Parameters.Add(new SqlParameter("@PurchaseDate", computer.PurchaseDate));
+                        cmd.Parameters.Add(new SqlParameter("@DecomissionDate", computer.DecomissionDate));
+                        cmd.Parameters.Add(new SqlParameter("@Make", computer.Make));
+                        cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
 
-            
-                    catch (Exception)
+                        computer.Id = (int)await cmd.ExecuteScalarAsync();
+
+                        return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
+                    }
+
+                }
+            }
+
+
+            catch (Exception)
             {
                 if (!ComputerExists(id))
                 {
                     return NotFound();
-    }
+                }
                 else
                 {
                     throw;
@@ -274,26 +283,17 @@ namespace BangazonAPI.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
+                        // first delete the instance of the item from the join table 
                         cmd.CommandText = "DELETE FROM ComputerEmployee WHERE ComputerId = @id";
-                        //cmd.CommandText = "DELETE FROM Computer WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
-
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
-
-                        //if (rowsAffected > 0)
-                        //{
-                        //    return new StatusCodeResult(StatusCodes.Status204NoContent);
-                        //}
-
-                        //throw new Exception("No rows affected");
                     }
-                    
+
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        //cmd.CommandText = "DELETE FROM ComputerEmployee WHERE ComputerId = @id";
+                        // then delete the original instance of the item from its own table
                         cmd.CommandText = "DELETE FROM Computer WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
-
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
@@ -303,9 +303,7 @@ namespace BangazonAPI.Controllers
 
                         throw new Exception("No rows affected");
                     }
-
                 }
-
             }
             catch (Exception)
             {
@@ -329,7 +327,8 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    // More string interpolation
+                    // boolean to check to see if employee exist
+                    // used a couple times prior
                     cmd.CommandText = @"SELECT Id, PurchaseDate, DecomissionDate, Make, Manufacturer
                                         FROM Computer 
                                         WHERE Id = @id";
