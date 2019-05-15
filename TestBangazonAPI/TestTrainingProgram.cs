@@ -32,6 +32,7 @@ namespace TestBangazonAPI
             }
         }
 
+
         [Fact]
         public async Task Test_Get_Single_TrainingProgram()
         {
@@ -46,7 +47,7 @@ namespace TestBangazonAPI
                 var trainingprogram = JsonConvert.DeserializeObject<TrainingProgram>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("EDIT training", trainingprogram.Name);
+                Assert.Equal("PowerPoint", trainingprogram.Name);
                 Assert.Equal(50, trainingprogram.MaxAttendees);
                 Assert.NotNull(trainingprogram);
             }
