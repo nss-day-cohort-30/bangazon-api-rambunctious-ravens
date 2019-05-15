@@ -126,7 +126,7 @@ namespace TestBangazonAPI
             DateTime decomissionDate = DateTime.Now;
 
             // New computer make, to change to and test
-            //string newComputerMake = "Dell";
+            string newComputerMake = "Dell";
 
             using (var client = new APIClientProvider().Client)
             {
@@ -135,7 +135,7 @@ namespace TestBangazonAPI
                  */
                 Computer modifiedComputer = new Computer
                 {
-                    Make = "Goddard",
+                    Make = newComputerMake,
                     Manufacturer = "Lenovo",
                     PurchaseDate = purchaseDate,
                     DecomissionDate = decomissionDate
@@ -162,8 +162,8 @@ namespace TestBangazonAPI
                 Computer newComputer = JsonConvert.DeserializeObject<Computer>(getComputerBody);
 
                 Assert.Equal(HttpStatusCode.OK, getComputer.StatusCode);
-                Assert.Equal(purchaseDate, newComputer.PurchaseDate);
-                Assert.Equal(decomissionDate, newComputer.DecomissionDate);
+                Assert.Equal(newComputerMake, newComputer.Make);
+                
 
             }
         }
