@@ -1,4 +1,7 @@
-﻿using System;
+﻿//Author: Niall Fraser
+//Purpose: This controller handles all methods for payment types
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -30,7 +33,8 @@ namespace BangazonAPI.Controllers
             }
         }
 
-        // GET api/values
+        // GET
+        // GET Purpose: Get method for all payment methods
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -59,47 +63,53 @@ namespace BangazonAPI.Controllers
                     }
 
                     reader.Close();
-
+                    // return payment types with 200 status code 
                     return Ok(paymentTypes);
                 }
             }
         }
 
         // GET api/values/5
+        // Purpose: Get individual payment type by Id.
         [HttpGet("{id}", Name = "GetPaymentType")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromRoute] int id)
         {
+            if (!PaymentTypeExists(id))
+            {
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
+            }
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = $@"SELECT Id, AcctNumber, Name, CustomerId 
-                                        FROM PaymentType 
-                                        WHERE Id = @id";
+                    cmd.CommandText = @"SELECT Id, AcctNumber, Name, CustomerId FROM PaymentType
+                                         WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
                     PaymentType paymentType = null;
+
                     if (reader.Read())
                     {
-                        paymentType = new PaymentType
-                        {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            AcctNumber = reader.GetInt32(reader.GetOrdinal("AcctNumber")),
-                            Name = reader.GetString(reader.GetOrdinal("Name")),
-                            CustomerId = reader.GetInt32(reader.GetOrdinal("CustomerId"))
-                        };
-
-                        reader.Close();
-
+                            paymentType = new PaymentType
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                AcctNumber = reader.GetInt32(reader.GetOrdinal("AcctNumber")),
+                                Name = reader.GetString(reader.GetOrdinal("Name")),
+                                CustomerId = reader.GetInt32(reader.GetOrdinal("CustomerId"))
+                            };
                     }
+                    
+                    reader.Close();
+
                     return Ok(paymentType);
                 }
             }
         }
 
         //POST api/values
+        //Purpose: Add a new payment type to the database
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] PaymentType pt)
         {
@@ -123,7 +133,8 @@ namespace BangazonAPI.Controllers
             }
         }
 
-        ////PUT api/values/5
+        // PUT api/values/5
+        // Purpose: Edit a specific payment type in the database by passing in the Id that you want to edit
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] PaymentType pt)
         {
@@ -170,6 +181,7 @@ namespace BangazonAPI.Controllers
         }
 
         //DELETE api/values/5
+        //Purpose: delete a payment type by passing in the Id of the payment type you want to delete
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -205,6 +217,7 @@ namespace BangazonAPI.Controllers
             }
         }
 
+        //Bool to check that a payment type exists in the database
         private bool PaymentTypeExists(int id)
         {
             using (SqlConnection conn = Connection)
@@ -213,7 +226,7 @@ namespace BangazonAPI.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     //More string interpolation
-                    cmd.CommandText = "SELECT Id FROM PaymentTyppe WHERE Id = @id";
+                    cmd.CommandText = "SELECT Id FROM PaymentType WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
 
                     SqlDataReader reader = cmd.ExecuteReader();

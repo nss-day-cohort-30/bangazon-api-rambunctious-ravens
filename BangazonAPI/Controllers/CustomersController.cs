@@ -1,4 +1,8 @@
-﻿using System;
+﻿//Author: Niall Fraser
+//Purpose: This controller handles all methods for customers
+
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -30,7 +34,7 @@ namespace BangazonAPI.Controllers
             }
         }
 
-        // GET api/values
+        // GET Purpose: Get method for all Customers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -43,6 +47,7 @@ namespace BangazonAPI.Controllers
                     cmd.CommandText = $"SELECT Id, FirstName, LastName FROM Customer";
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
+                    // A list to hold the customers we retrieve from the database.
                     List<Customer> customers = new List<Customer>();
                     while (reader.Read())
                     {
@@ -53,50 +58,58 @@ namespace BangazonAPI.Controllers
                             FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                             LastName = reader.GetString(reader.GetOrdinal("LastName")),
                         };
-
+                        //Add customer to our list
                         customers.Add(customer);
                     }
 
                     reader.Close();
-
+                    //Return list of customers with 200 status code
                     return Ok(customers);
                 }
             }
         }
 
-        // GET api/values/5
+        // GET Purpose: Get individual customer by Id.
         [HttpGet("{id}", Name = "GetCustomer")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> Get([FromRoute] int id)
         {
+            if (!CustomerExists(id))
+            {
+                return new StatusCodeResult(StatusCodes.Status404NotFound);
+            }
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = $@"SELECT Id, FirstName, LastName FROM Customer 
-                                      WHERE Id = @id";
+                                         WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
                     Customer customer = null;
+
                     if (reader.Read())
                     {
-                        customer = new Customer
-                        {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                        };
+                            customer = new Customer
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            };
+                        
                     }
+                        reader.Close();
 
-                    reader.Close();
-
-                    return Ok(customer);
+                        return Ok(customer);
                 }
             }
         }
 
-        //POST api/values
+
+
+        //POST
+        //Purpose: Add a new customer to the database
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Customer customer)
         {
@@ -121,7 +134,8 @@ namespace BangazonAPI.Controllers
             }
         }
 
-        //PUT api/values/5
+        //PUT
+        //Purpose: Edit a specific customer in the database by passing in the Id that you want to edit
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Customer customer)
         {
@@ -166,6 +180,7 @@ namespace BangazonAPI.Controllers
         }
 
         //DELETE api/values/5
+        //Purpose: Delete a specific customer in the database by passing in the Id that you want to edit
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -180,11 +195,6 @@ namespace BangazonAPI.Controllers
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
-                        //if (rowsAffected > 0)
-                        //{
-                        //    return new StatusCodeResult(StatusCodes.Status204NoContent);
-                        //}
-                        //throw new Exception("No rows affected");
                     }
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
@@ -213,6 +223,7 @@ namespace BangazonAPI.Controllers
             }
         }
 
+        //Bool to check if a customer exists by looking up it's Id.
         private bool CustomerExists(int id)
         {
             using (SqlConnection conn = Connection)

@@ -54,8 +54,7 @@ namespace TestBangazonAPI
                 var paymentType = JsonConvert.DeserializeObject<PaymentType>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal(1992, paymentType.AcctNumber);
-                Assert.Equal("Amex", paymentType.Name);
+                Assert.Equal(12345, paymentType.AcctNumber);
                 Assert.NotNull(paymentType);
             }
         }
@@ -66,7 +65,7 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("/paymenttype/999999999");
+                var response = await client.GetAsync("/api/paymenttype/999999999");
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }
@@ -122,7 +121,7 @@ namespace TestBangazonAPI
         [Fact]
         public async Task Test_Modify_Payment_Type()
         {
-            // New last name to change to and test
+            // New account number to be put into object
             int newAcctNumber = 1992;
 
             using (var client = new APIClientProvider().Client)
@@ -140,7 +139,7 @@ namespace TestBangazonAPI
                 var modiefiedAmexAsJSON = JsonConvert.SerializeObject(modiefiedAmex);
 
                 var response = await client.PutAsync(
-                    "/api/paymenttype/1",
+                    "/api/paymenttype/2",
                     new StringContent(modiefiedAmexAsJSON, Encoding.UTF8, "application/json")
                 );
                 response.EnsureSuccessStatusCode();
@@ -151,14 +150,14 @@ namespace TestBangazonAPI
                 /*
                     GET section
                  */
-                var getNiall = await client.GetAsync("/api/paymenttype/1");
-                getNiall.EnsureSuccessStatusCode();
+                var getAmex = await client.GetAsync("/api/paymenttype/2");
+                getAmex.EnsureSuccessStatusCode();
 
-                string getNiallBody = await getNiall.Content.ReadAsStringAsync();
-                PaymentType newNiall = JsonConvert.DeserializeObject<PaymentType>(getNiallBody);
+                string getAmexBody = await getAmex.Content.ReadAsStringAsync();
+                PaymentType newAmex = JsonConvert.DeserializeObject<PaymentType>(getAmexBody);
 
-                Assert.Equal(HttpStatusCode.OK, getNiall.StatusCode);
-                Assert.Equal(newAcctNumber, newNiall.AcctNumber);
+                Assert.Equal(HttpStatusCode.OK, getAmex.StatusCode);
+                Assert.Equal(newAcctNumber, newAmex.AcctNumber);
             }
         }
     }
