@@ -56,7 +56,7 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("/producttype/999999999");
+                var response = await client.GetAsync("api/producttype/999999999");
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }

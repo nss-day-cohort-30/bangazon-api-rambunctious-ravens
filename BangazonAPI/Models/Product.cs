@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BangazonAPI.Models
 {
+    // The model for a product
     public class Product
     {
         public int Id { get; set; }

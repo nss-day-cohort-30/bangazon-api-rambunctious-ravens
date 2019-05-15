@@ -30,6 +30,7 @@ namespace BangazonAPI.Controllers
             }
         }
         [HttpGet]
+        //This method returns all instances of product types from the database
         public async Task<IActionResult> Get()
         {
             using (SqlConnection conn = Connection)
@@ -37,6 +38,7 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
+                    // This is the SQL statement that is given to the database to get the 
                     cmd.CommandText = "SELECT Id, [Name] FROM ProductType";
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
