@@ -87,7 +87,10 @@ namespace BangazonAPI.Controllers
                             Budget = reader.GetInt32(reader.GetOrdinal("Budget"))
                         };
                     }
-
+                    if (!DepartmentExists(id))
+                    {
+                        return NotFound();
+                    }
                     reader.Close();
 
                     return Ok(department);
