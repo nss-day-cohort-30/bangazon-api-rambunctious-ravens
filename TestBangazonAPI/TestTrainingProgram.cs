@@ -14,20 +14,35 @@ namespace TestBangazonAPI
 
     public class TestTrainingPogram
     {
+
+        
         [Fact]
         public async Task Test_Get_All_TrainingPrograms()
         {
-
+            // new client provider goes to API  
             using (var client = new APIClientProvider().Client)
             {
+                // method inside of client goes to url and stores in response 
+
                 var response = await client.GetAsync("api/trainingprogram");
 
                 response.EnsureSuccessStatusCode();
 
+
+                // responseBody puts this response into a string 
+
                 string responseBody = await response.Content.ReadAsStringAsync();
+
+                // trainingProgramList converts responseBody and stores it into JSON 
+
                 var trainingProgramList = JsonConvert.DeserializeObject<List<TrainingProgram>>(responseBody);
 
+
+                // if the two methods below are true, the test passes
+                
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+                // did we get anything? if so the test passes 
                 Assert.True(trainingProgramList.Count > 0);
             }
         }
@@ -59,7 +74,7 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("/trainingprogram/999999999");
+                var response = await client.GetAsync("api/trainingprogram/999999999");
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }
@@ -123,7 +138,8 @@ namespace TestBangazonAPI
         [Fact]
         public async Task Test_Modify_TrainingProgram()
         {
-            // New training program name to change to and test
+           
+            // variables to store and put into a new instance of a TrainingProgram(modified program)
 
             string newName = "PowerPoint";
              DateTime startdate = DateTime.Now;
@@ -138,8 +154,14 @@ namespace TestBangazonAPI
                     EndDate = enddate,
                     MaxAttendees = 50
                 };
+
+                // converted the modified program into JSON
+
                 var modifiedTrainingProgramAsJSON = JsonConvert.SerializeObject(modifiedProgram);
 
+
+                // go to this url, have modifiedTrainingProgram put into string content //
+                
                 var response = await client.PutAsync(
                     "api/trainingprogram/1",
                     new StringContent(modifiedTrainingProgramAsJSON, Encoding.UTF8, "application/json")
@@ -149,7 +171,7 @@ namespace TestBangazonAPI
 
                 Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
-                
+                // getEditTraining 
                 var getEditTraining = await client.GetAsync("api/trainingprogram/1");
                 getEditTraining.EnsureSuccessStatusCode();
 

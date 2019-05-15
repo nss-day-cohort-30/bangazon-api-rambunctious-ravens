@@ -19,10 +19,14 @@ namespace BangazonAPI.Controllers
           
         private readonly IConfiguration _config;
 
+
+        // method to get private variable public
         public TrainingProgramController(IConfiguration config)
         {
             _config = config;
         }
+
+        // method to connect to SQL Database
 
         private SqlConnection Connection
         {
@@ -32,22 +36,35 @@ namespace BangazonAPI.Controllers
             }
         }
 
-        // GET api/values
+        // GET all Training Programs method 
+        
         [HttpGet]
         public async Task<IActionResult> Get()
         {
+            
             using (SqlConnection conn = Connection)
             {
+                // connection open method 
                 conn.Open();
+
+                // cmd will create a command to use in SQL database
+
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = "SELECT * from TrainingProgram";
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
+
+                    // new list of type trainingProgram  // 
+
                     List<TrainingProgram> trainingPrograms = new List<TrainingProgram>();
 
+                    
+                    // date time variables. they suck. 
                     DateTime? StartDate = null;
                     DateTime? EndDate = null;
+
+
                     while (reader.Read())
                     {
                         TrainingProgram trainingProgram = new TrainingProgram
@@ -74,11 +91,16 @@ namespace BangazonAPI.Controllers
             }
         }
 
-        // GET api/values/5
+
+
+        // GET api/trainingPrograms by ID 
+
         [HttpGet("{id}", Name = "GetTrainingProgram")]
         public async Task<IActionResult> Get(int id)
+
         {
             using (SqlConnection conn = Connection)
+
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
@@ -104,13 +126,17 @@ namespace BangazonAPI.Controllers
 
                     }
 
+                    if (!TrainingProgramExists(id))
+                    { return NotFound(); };
 
-                    reader.Close();
+                        reader.Close();
 
                     return Ok(trainingProgram);
                 }
             }
-        }
+          }
+            
+        
 
 
 
