@@ -13,6 +13,8 @@ namespace BangazonAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //This controller was made by Justina and Sam
+    //All of our fetch call methods for departments are created here
     public class DepartmentController : ControllerBase
     {
         private readonly IConfiguration _config;
@@ -31,6 +33,7 @@ namespace BangazonAPI.Controllers
         }
 
         // GET api/values
+        //Using sql statement to get all departments
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -65,7 +68,9 @@ namespace BangazonAPI.Controllers
         }
 
         // GET api/values/5
-        [HttpGet("{id}", Name ="GetDepartment")]
+        //Get a single item
+        //sql statment to get a department by id
+        [HttpGet("{id}", Name = "GetDepartment")]
         public async Task<IActionResult> Get(int id)
         {
             using (SqlConnection conn = Connection)
@@ -87,6 +92,8 @@ namespace BangazonAPI.Controllers
                             Budget = reader.GetInt32(reader.GetOrdinal("Budget"))
                         };
                     }
+                    //checks to see if department with an id we want to get already exists,
+                    //if it does not we are returned with a status of not found
                     if (!DepartmentExists(id))
                     {
                         return NotFound();
@@ -99,6 +106,7 @@ namespace BangazonAPI.Controllers
         }
 
         // POST api/values
+        //creating department object to post to db
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Department department)
         {
@@ -141,7 +149,7 @@ namespace BangazonAPI.Controllers
                                 Budget = @Budget
                             WHERE Id = @id
                         ";
-                        
+
                         cmd.Parameters.Add(new SqlParameter("@Name", department.Name));
                         cmd.Parameters.Add(new SqlParameter("@Budget", department.Budget));
                         cmd.Parameters.Add(new SqlParameter("@id", id));
@@ -159,6 +167,8 @@ namespace BangazonAPI.Controllers
             }
             catch (Exception)
             {
+                //checks to see if department with an id we want to get already exists,
+                //if it does not we are returned with a status of not found
                 if (!DepartmentExists(id))
                 {
                     return NotFound();
@@ -169,12 +179,6 @@ namespace BangazonAPI.Controllers
                 }
             }
         }
-
-        // DELETE api/values/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //}
 
         private bool DepartmentExists(int id)
         {

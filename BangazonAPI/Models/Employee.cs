@@ -7,6 +7,8 @@ namespace BangazonAPI.Models
 {
     public class Employee
     {
+        //This class stores all of our attributes for Employee
+
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

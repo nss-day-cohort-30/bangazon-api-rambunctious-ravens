@@ -15,6 +15,8 @@ namespace BangazonAPI.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
+        //This controller was made by Justina and Sam
+        //All of our fetch call methods for employees are created here
         private readonly IConfiguration _config;
 
         public EmployeeController(IConfiguration config)
@@ -31,6 +33,7 @@ namespace BangazonAPI.Controllers
         }
 
         // GET api/values
+        //Using join on sql statement to join department and computer to employees
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -87,6 +90,8 @@ namespace BangazonAPI.Controllers
         }
 
         // GET api/values/5
+        //Get a single item
+        //Using join on sql statement to join department and computer to employees
         [HttpGet("{id}", Name = "GetEmployee")]
         public async Task<IActionResult> Get(int id)
         {
@@ -106,6 +111,7 @@ namespace BangazonAPI.Controllers
                     Employee employee = null;
                     if (reader.Read())
                     {
+                        //creating the new object with the joined tables
                         employee = new Employee
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
@@ -127,6 +133,8 @@ namespace BangazonAPI.Controllers
                             }
                         };
                     }
+                    //checks to see if employee with an id we want to get already exists,
+                    //if it does not we are returned with a status of not found
                     if (!EmployeeExists(id))
                     {
                         return NotFound();
@@ -139,6 +147,7 @@ namespace BangazonAPI.Controllers
         }
 
         // POST api/values
+        //creating employee object to post to db
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Employee employee)
         {
@@ -158,7 +167,7 @@ namespace BangazonAPI.Controllers
                     cmd.Parameters.Add(new SqlParameter("@IsSuperVisor", employee.IsSuperVisor));
                     cmd.Parameters.Add(new SqlParameter("@DepartmentId", employee.DepartmentId));
 
-
+                    //creates new id
                     int newId = (int)await cmd.ExecuteScalarAsync();
                     employee.Id = newId;
                     return CreatedAtRoute("GetEmployee", new { id = newId }, employee);
@@ -168,6 +177,8 @@ namespace BangazonAPI.Controllers
         }
 
         // PUT api/values/5
+        //Sql statment to edit object
+        //
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Employee employee)
         {
@@ -184,7 +195,7 @@ namespace BangazonAPI.Controllers
                             LastName = @LastName,
                             IsSuperVisor = @IsSuperVisor,
                             DepartmentId = @DepartmentId
-                        WHERE Id = @id;
+                        WHERE Id = @id
                         ";
                         cmd.Parameters.Add(new SqlParameter("@FirstName", employee.FirstName));
                         cmd.Parameters.Add(new SqlParameter("@LastName", employee.LastName));
@@ -192,7 +203,7 @@ namespace BangazonAPI.Controllers
                         cmd.Parameters.Add(new SqlParameter("@DepartmentId", employee.DepartmentId));
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
-
+                        //returns our 404 if the object with the requested id does not exist
                         int rowsAffected = await cmd.ExecuteNonQueryAsync();
 
                         if (rowsAffected > 0)
@@ -206,6 +217,8 @@ namespace BangazonAPI.Controllers
             }
             catch (Exception)
             {
+                //checks to see if employee with an id we want to get already exists,
+                //if it does not we are returned with a status of not found
                 if (!EmployeeExists(id))
                 {
                     return NotFound();
@@ -216,13 +229,6 @@ namespace BangazonAPI.Controllers
                 }
             }
         }
-
-        // DELETE api/values/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //}
-
         private bool EmployeeExists(int id)
         {
             using (SqlConnection conn = Connection)

@@ -80,11 +80,8 @@ namespace BangazonAPI.Controllers
                                 Manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer")),
 
                             };
-
                             computers.Add(computer);
                         }
-
-
 
                     }
                     reader.Close();
@@ -94,7 +91,6 @@ namespace BangazonAPI.Controllers
         }
 
         // GET api/values/5
-        //Get a single item
         //Using an if else for our Get to check if decomissionDate is null, if it is not add it to the object
         //if it is don't add it
         [HttpGet("{id}", Name = "GetComputer")]
@@ -159,6 +155,7 @@ namespace BangazonAPI.Controllers
         }
 
         // POST api/values
+        //Computer computer is the type of instance that will be passed throught this method
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Computer computer)
         {
@@ -213,6 +210,7 @@ namespace BangazonAPI.Controllers
         }
 
         // PUT api/values/5
+        //Using the same sql statments as post to check against if an object has null  decomission date
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] Computer computer)
         {
@@ -296,6 +294,8 @@ namespace BangazonAPI.Controllers
         }
 
         // DELETE api/values/5
+        //Using to sql statements within one connection to first delete the join on the computerEmployee
+        //to then be able to delete the computer
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -330,6 +330,8 @@ namespace BangazonAPI.Controllers
             }
             catch (Exception)
             {
+                //checks to see if computer with an id we want to get already exists,
+                //if it does not we are returned with a status of not found
                 if (!ComputerExists(id))
                 {
                     return NotFound();
@@ -343,6 +345,7 @@ namespace BangazonAPI.Controllers
         }
 
 
+        //Use this bool for our try, catch statements
         private bool ComputerExists(int id)
         {
             using (SqlConnection conn = Connection)
