@@ -63,7 +63,7 @@ namespace BangazonAPI.Controllers
             }
         }
 
-        // GET api/values/5
+        // GET api/values/5s
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {

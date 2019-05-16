@@ -11,15 +11,18 @@ using System;
 
 namespace TestBangazonAPI
 {
-
+    
     public class TestTrainingPogram
     {
+
+        // testing for the training program table
 
         
         [Fact]
         public async Task Test_Get_All_TrainingPrograms()
         {
             // new client provider goes to API  
+            
             using (var client = new APIClientProvider().Client)
             {
                 // method inside of client goes to url and stores in response 
@@ -70,6 +73,7 @@ namespace TestBangazonAPI
 
         [Fact]
         public async Task Test_Get_NonExistent_TrainingProgram_Fails()
+            // this method should fail if successful 
         {
 
             using (var client = new APIClientProvider().Client)
@@ -85,6 +89,9 @@ namespace TestBangazonAPI
         [Fact]
         public async Task Test_Create_And_Delete_TrainingProgram()
         {
+
+            // this method should create and delete a training program. 
+
             DateTime startdate = DateTime.Now;
             DateTime enddate = DateTime.Now;
 
@@ -109,7 +116,10 @@ namespace TestBangazonAPI
 
                 string responseBody = await response.Content.ReadAsStringAsync();
                 var newSafety = JsonConvert.DeserializeObject<TrainingProgram>(responseBody);
+                
 
+
+                // actual tests to make sure that the new object is matches with the first 
                 Assert.Equal(HttpStatusCode.Created, response.StatusCode);
                 Assert.Equal("safety", newSafety.Name);
                 Assert.Equal(startdate, newSafety.StartDate);
@@ -126,6 +136,7 @@ namespace TestBangazonAPI
         [Fact]
         public async Task Test_Delete_NonExistent_TrainingProgram_Fails()
         {
+
             using (var client = new APIClientProvider().Client)
             {
                 var deleteResponse = await client.DeleteAsync("/api/trainingprogram/600000");
