@@ -188,7 +188,7 @@ namespace BangazonAPI.Controllers
                         cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
 
                         computer.Id = (int)await cmd.ExecuteScalarAsync();
-
+                        //if decomission date is null this returns objects new id and url
                         return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
                     }
                 }
@@ -202,7 +202,7 @@ namespace BangazonAPI.Controllers
                     cmd.Parameters.Add(new SqlParameter("@Manufacturer", computer.Manufacturer));
 
                     computer.Id = (int)await cmd.ExecuteScalarAsync();
-
+                    //if decomission date is not null this returns objects new id and url
                     return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
                 }
 
@@ -249,7 +249,7 @@ namespace BangazonAPI.Controllers
                             cmd.Parameters.Add(new SqlParameter("@id", id));
 
                             computer.Id = (int)await cmd.ExecuteScalarAsync();
-
+                            //if decomission date is null this returns objects id and url
                             return CreatedAtRoute("GetComputer", new { id = computer.Id }, computer);
                         }
                     }
