@@ -65,7 +65,7 @@ namespace TestBangazonAPI
                 var trainingprogram = JsonConvert.DeserializeObject<TrainingProgram>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("PowerPoint", trainingprogram.Name);
+                Assert.Equal("React Training", trainingprogram.Name);
                 Assert.Equal(50, trainingprogram.MaxAttendees);
                 Assert.NotNull(trainingprogram);
             }
