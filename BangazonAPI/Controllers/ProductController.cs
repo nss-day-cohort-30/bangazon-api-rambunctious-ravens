@@ -13,7 +13,7 @@ namespace BangazonAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    // This class holds all methods for the products Author: Jacob Sanders
+    // This class holds all methods for basic CRUD for the products. Author: Jacob Sanders
     public class ProductController : ControllerBase
     {
         private readonly IConfiguration _config;
@@ -78,7 +78,7 @@ namespace BangazonAPI.Controllers
                             Quantity = reader.GetInt32(reader.GetOrdinal("Quantity")),
                             
                         };
-
+                        // Adds the product instance to the product list
                         products.Add(product);
                     }
 
@@ -151,7 +151,7 @@ namespace BangazonAPI.Controllers
         }
 
         // POST api/values
-        //This method adds a new instance of a product object to the database
+        //This method adds a new instance of a product to the database
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Product product)
         {
@@ -283,7 +283,7 @@ namespace BangazonAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    // More string interpolation
+                    // This is the SQL statement that is sent to the database to check if the instance correlated to the given id exists
                     cmd.CommandText = "SELECT Id FROM Product WHERE Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
 
