@@ -38,7 +38,7 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("api/Computer/10");
+                var response = await client.GetAsync("api/Computer/4");
 
                 response.EnsureSuccessStatusCode();
 
@@ -46,8 +46,8 @@ namespace TestBangazonAPI
                 var computer = JsonConvert.DeserializeObject<Computer>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("Gala", computer.Make);
-                Assert.Equal("Apple", computer.Manufacturer);
+                Assert.Equal("AlienWare", computer.Make);
+                Assert.Equal("Dell", computer.Manufacturer);
                
 
                 Assert.NotNull(computer);
@@ -144,7 +144,7 @@ namespace TestBangazonAPI
                 var modifiedComputerAsJSON = JsonConvert.SerializeObject(modifiedComputer);
 
                 var response = await client.PutAsync(
-                    "api/Computer/16",
+                    "api/Computer/1",
                     new StringContent(modifiedComputerAsJSON, Encoding.UTF8, "application/json")
                 );
                 response.EnsureSuccessStatusCode();
@@ -155,7 +155,7 @@ namespace TestBangazonAPI
                 /*
                     GET section
                  */
-                var getComputer = await client.GetAsync("api/Computer/16");
+                var getComputer = await client.GetAsync("api/Computer/1");
                 getComputer.EnsureSuccessStatusCode();
 
                 string getComputerBody = await getComputer.Content.ReadAsStringAsync();

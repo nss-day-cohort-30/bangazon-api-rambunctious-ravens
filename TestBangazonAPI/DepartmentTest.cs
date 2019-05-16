@@ -38,7 +38,7 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("api/Department/7");
+                var response = await client.GetAsync("api/Department/1");
 
                 response.EnsureSuccessStatusCode();
 
@@ -46,8 +46,8 @@ namespace TestBangazonAPI
                 var department = JsonConvert.DeserializeObject<Department>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("Nerd zone", department.Name);
-                Assert.Equal(2, department.Budget);
+                Assert.Equal("Information Technology", department.Name);
+                Assert.Equal(1000, department.Budget);
 
 
                 Assert.NotNull(department);
@@ -64,55 +64,6 @@ namespace TestBangazonAPI
                 Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             }
         }
-
-
-        //[Fact]
-        //public async Task Test_Create_And_Delete_Department()
-        //{
-
-        //    using (var client = new APIClientProvider().Client)
-        //    {
-        //        Department departmentOne = new Department
-        //        {
-        //            Name = "Marketing",
-        //            Budget = 10
-
-        //        };
-        //        var departmentOneAsJSON = JsonConvert.SerializeObject(departmentOne);
-
-
-        //        var response = await client.PostAsync(
-        //            "api/Department",
-        //            new StringContent(departmentOneAsJSON, Encoding.UTF8, "application/json")
-        //        );
-
-        //        response.EnsureSuccessStatusCode();
-
-        //        string responseBody = await response.Content.ReadAsStringAsync();
-        //        var newDepartment = JsonConvert.DeserializeObject<Department>(responseBody);
-
-        //        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-        //        Assert.Equal("Marketing", newDepartment.Name);
-        //        Assert.Equal(10, newDepartment.Budget);
-
-
-        //        var deleteResponse = await client.DeleteAsync($"api/Department/{newDepartment.Id}");
-        //        deleteResponse.EnsureSuccessStatusCode();
-        //        Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
-        //    }
-        //}
-
-        //[Fact]
-        //public async Task Test_Delete_NonExistent_Department_Fails()
-        //{
-        //    using (var client = new APIClientProvider().Client)
-        //    {
-        //        var deleteResponse = await client.DeleteAsync("/api/Departments/600000");
-
-        //        Assert.False(deleteResponse.IsSuccessStatusCode);
-        //        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
-        //    }
-        //}
 
         [Fact]
         public async Task Test_Modify_Department()
@@ -134,7 +85,7 @@ namespace TestBangazonAPI
                 var modifiedDepartmentAsJSON = JsonConvert.SerializeObject(modifiedDepartment);
 
                 var response = await client.PutAsync(
-                    "api/Department/12",
+                    "api/Department/2",
                     new StringContent(modifiedDepartmentAsJSON, Encoding.UTF8, "application/json")
                 );
                 response.EnsureSuccessStatusCode();
@@ -145,7 +96,7 @@ namespace TestBangazonAPI
                 /*
                     GET section
                  */
-                var getDepartment = await client.GetAsync("api/Department/12");
+                var getDepartment = await client.GetAsync("api/Department/2");
                 getDepartment.EnsureSuccessStatusCode();
 
                 string getDepartmentBody = await getDepartment.Content.ReadAsStringAsync();

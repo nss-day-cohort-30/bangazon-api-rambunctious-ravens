@@ -38,7 +38,7 @@ namespace TestEmployeeExercisesAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("api/Employee/10");
+                var response = await client.GetAsync("api/Employee/1");
 
                 response.EnsureSuccessStatusCode();
 
@@ -77,13 +77,13 @@ namespace TestEmployeeExercisesAPI
                 {
                     FirstName = "Kate",
                     LastName = newLastName,
-                    DepartmentId = 6,
+                    DepartmentId = 2,
                     IsSuperVisor = true
                 };
                 var modifiedKateAsJSON = JsonConvert.SerializeObject(modifiedKate);
 
                 var response = await client.PutAsync(
-                    "api/Employee/12",
+                    "api/Employee/2",
                     new StringContent(modifiedKateAsJSON, Encoding.UTF8, "application/json")
                 );
                 response.EnsureSuccessStatusCode();
@@ -94,7 +94,7 @@ namespace TestEmployeeExercisesAPI
                 /*
                     GET section
                  */
-                var getKate = await client.GetAsync("api/Employee/12");
+                var getKate = await client.GetAsync("api/Employee/2");
                 getKate.EnsureSuccessStatusCode();
 
                 string getKateBody = await getKate.Content.ReadAsStringAsync();
