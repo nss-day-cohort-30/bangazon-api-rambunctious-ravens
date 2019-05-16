@@ -54,8 +54,8 @@ namespace TestBangazonAPI
                 var customer = JsonConvert.DeserializeObject<Customer>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("Justina", customer.FirstName);
-                Assert.Equal("Vickers", customer.LastName);
+                Assert.Equal("Bert", customer.FirstName);
+                Assert.Equal("Kreishcher", customer.LastName);
                 Assert.NotNull(customer);
             }
         }
