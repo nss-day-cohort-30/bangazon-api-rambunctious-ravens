@@ -111,7 +111,7 @@ namespace TestBangazonAPI
         {
             using (var client = new APIClientProvider().Client)
             {
-                var deleteResponse = await client.DeleteAsync("/PaymentType/999999");
+                var deleteResponse = await client.DeleteAsync("/api/PaymentType/999999");
 
                 Assert.False(deleteResponse.IsSuccessStatusCode);
                 Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
