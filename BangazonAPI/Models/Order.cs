@@ -1,4 +1,8 @@
-﻿using System;
+﻿/* This class holds all keys for the Order object.
+ * Author: Sam Cronin
+  */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,15 +13,9 @@ namespace BangazonAPI.Models
     {
         public int Id { get; set; }
         public int CustomerId { get; set; }
+        public Customer Customer { get; set; }
         public int PaymentTypeId { get; set; }
+        public PaymentType PaymentType { get; set; }
     }
 }
 
-
-//CREATE TABLE[Order] (
-//   Id INTEGER NOT NULL PRIMARY KEY IDENTITY,
-//   CustomerId INTEGER NOT NULL,
-//	PaymentTypeId INTEGER,
-//    CONSTRAINT FK_Order_Customer FOREIGN KEY(CustomerId) REFERENCES Customer(Id),
-//    CONSTRAINT FK_Order_Payment FOREIGN KEY(PaymentTypeId) REFERENCES PaymentType(Id)
-//);
