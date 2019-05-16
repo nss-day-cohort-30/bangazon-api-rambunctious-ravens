@@ -1,13 +1,12 @@
-﻿using Newtonsoft.Json;
-using BangazonAPI.Models;
+﻿using BangazonAPI.Models;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Xunit;
-using System.Linq;
 using TestBangazonAPI;
+using Xunit;
 
 namespace TestEmployeeExercisesAPI
 {
@@ -15,7 +14,7 @@ namespace TestEmployeeExercisesAPI
     public class TestEmployees
     {
         [Fact]
-        public async Task Test_Get_All_Employees()
+        public async Task Test_Gert_All_Employees()
         {
 
             using (var client = new APIClientProvider().Client)
