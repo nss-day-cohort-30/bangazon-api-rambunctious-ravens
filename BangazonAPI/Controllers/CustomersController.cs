@@ -44,7 +44,10 @@ namespace BangazonAPI.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     //SQL command to execute
-                    cmd.CommandText = $"SELECT Id, FirstName, LastName FROM Customer";
+                    cmd.CommandText = $"SELECT c.Id, c.FirstName, c.LastName, p.Id ProductId, p.ProductTypeId, p.Price, p.Title, p.Description, p.Quantity " +
+                            "FROM Customer c " +
+                            "LEFT JOIN Product p " +
+                            "ON c.Id = p.CustomerId";
                     SqlDataReader reader = await cmd.ExecuteReaderAsync();
 
                     // A list to hold the customers we retrieve from the database.
