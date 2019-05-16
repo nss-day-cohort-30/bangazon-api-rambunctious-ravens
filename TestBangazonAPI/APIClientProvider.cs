@@ -5,7 +5,7 @@ using Xunit;
 
 namespace TestBangazonAPI
 {
-    class APIClientProvider : IClassFixture<WebApplicationFactory<Startup>>
+    public class APIClientProvider : IClassFixture<WebApplicationFactory<Startup>>
     {
         public HttpClient Client { get; private set; }
         private readonly WebApplicationFactory<Startup> _factory = new WebApplicationFactory<Startup>();
