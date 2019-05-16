@@ -37,7 +37,7 @@ namespace TestBangazonAPI
 
             using (var client = new APIClientProvider().Client)
             {
-                var response = await client.GetAsync("/api/product/1");
+                var response = await client.GetAsync("/api/product/2");
 
                 response.EnsureSuccessStatusCode();
 
@@ -45,8 +45,8 @@ namespace TestBangazonAPI
                 var product = JsonConvert.DeserializeObject<Product>(responseBody);
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("A Big Bee", product.Title);
-                Assert.Equal("This bee is huge", product.Description);
+                Assert.Equal("Trees", product.Title);
+                Assert.Equal("You bought a forest", product.Description);
                 Assert.NotNull(product);
             }
         }
